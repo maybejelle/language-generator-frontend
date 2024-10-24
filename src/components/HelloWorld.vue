@@ -48,6 +48,7 @@
 
   <div class="exampleTextfields">
     <TextField
+      readonly
       placeholder="Enter your message here"/>
       <MultipurposeButton
       buttonType="left"

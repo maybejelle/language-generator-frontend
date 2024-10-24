@@ -1,8 +1,9 @@
 <template>
-    <textarea :class="['text-field', { isLongField: isLongField }]" :placeholder="placeholder"></textarea>
+    <textarea :class="['text-field', { isLongField: isLongField, readonly: readonly}]" :readonly="readonly" :placeholder="placeholder"></textarea>
 </template>
 
 <script>
+
 
 export default {
     props: {
@@ -13,6 +14,10 @@ export default {
         placeholder: {
             type: String,
             default: '',
+        },
+        readonly: {
+            type: Boolean,
+            default: false,
         },
     },
 };
@@ -33,7 +38,12 @@ textarea.isLongField {
     resize: vertical;
 }
 
-textarea {
+.readonly {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+}
+
+textarea  {
     width: 20%;
     padding: 5px;
     font-size: 1rem;

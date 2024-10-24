@@ -1,5 +1,8 @@
 <template>
     <div class="slider-container">
+      <!-- Display the title at the top center -->
+      <div v-if="title" class="slider-title">{{ title }}</div>
+  
       <!-- Display set values or range above the slider -->
       <div v-if="isArray" class="slider-values">
         <span v-for="(value, index) in values" :key="index" class="slider-value">
@@ -49,6 +52,10 @@
         type: Number,
         default: 100, // Ending number for range sliders
       },
+      title: {
+        type: String,
+        default: '', // Title to be displayed at the top of the slider
+      }
     },
     data() {
       return {
@@ -89,6 +96,13 @@
     width: 100%;
     padding: 2rem 0rem 3rem 0rem;
     position: relative;
+  }
+  
+  .slider-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    text-align: center;
   }
   
   .slider-values {

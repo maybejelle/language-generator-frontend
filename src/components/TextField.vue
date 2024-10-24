@@ -1,8 +1,11 @@
 <template>
-    <textarea :class="['text-field', { isLongField: isLongField }]" :placeholder="placeholder"></textarea>
+    <h2>{{title}}</h2>
+    <p>{{description}}</p>
+    <textarea ref="textArea" :class="['text-field', { isLongField: isLongField, readonly: readonly}]" :readonly="readonly" :placeholder="placeholder"></textarea>
 </template>
 
 <script>
+
 
 export default {
     props: {
@@ -14,6 +17,18 @@ export default {
             type: String,
             default: '',
         },
+        readonly: {
+            type: Boolean,
+            default: false,
+        },
+        title: {
+            type: String,
+            default: '',
+        },
+        description: {
+            type: String,
+            default: '',
+        },
     },
 };
 
@@ -22,19 +37,32 @@ export default {
 
 <style scoped>
 textarea.isLongField {
-    width: 50%;
-    height: 20rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 0.5rem;
-    box-sizing: border-box;
-    margin-top: 1rem;
+    width: 100%;
     display: block;
     resize: vertical;
 }
 
-textarea {
-    width: 20%;
+h2{
+    font-size: 1rem;
+    color: #333;
+    text-align: left;
+}
+
+p {
+    font-size: 0.8rem;
+    text-align: left;
+    color: lightslategray;
+}
+
+
+
+.readonly {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+}
+
+textarea  {
+    width: 100%;
     padding: 5px;
     font-size: 1rem;
     border: 1px solid #ccc;

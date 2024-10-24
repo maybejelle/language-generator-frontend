@@ -87,7 +87,7 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
-    padding: 30px;
+    padding: 2rem 0rem 3rem 0rem;
     position: relative;
   }
   

@@ -30,14 +30,21 @@
       Single
     </MultipurposeButton>
   </div>
+  <div>
+    <TextField
+      placeholder="Enter your message here"/>
+    <TextField
+      :isLongField="true"/>
+  </div>
 </template>
 
 <script>
 import MultipurposeButton from './MultipurposeButton.vue';
-
+import TextField from './TextField.vue';
 export default {
   components: {
     MultipurposeButton,
+    TextField
   },
   methods: {
     handleLeftButton(isActive) {

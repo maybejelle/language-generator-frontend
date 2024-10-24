@@ -34,12 +34,14 @@
   <div class="exampleSliders">
     <!-- Using the slider with an array of values -->
     <MultipurposeSlider
+      title="Proficiency Levels"
       :values="['A1', 'A2', 'B1', 'B2', 'C1', 'C2']"
       @input="handleSliderInput"
     />
 
     <!-- Using the slider with a range -->
     <MultipurposeSlider
+      title="Maximum words"
       :min="0"
       :max="100"
       @input="handleSliderInput"

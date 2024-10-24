@@ -49,7 +49,14 @@
   <div class="exampleTextfields">
     <TextField
       placeholder="Enter your message here"/>
+      <MultipurposeButton
+      buttonType="left"
+      :onClick="copyText">Copy</MultipurposeButton>
+      <MultipurposeButton
+      buttonType="right"
+      :onClick="paste">Paste</MultipurposeButton>
     <TextField
+      ref="textArea"
       :isLongField="true"/>
   </div>
 </template>
@@ -80,6 +87,17 @@ export default {
     },
     handleSliderInput(value) {
       console.log('Slider value:', value); // Handle the slider value here
+    },
+    copyText() {
+      const text = this.$refs.textArea.$el.value;
+      navigator.clipboard.writeText(text);
+      console.log('Text copied');
+    },
+    paste() {
+      navigator.clipboard.readText().then((text) => {
+        this.$refs.textArea.$el.value = text;
+      });
+      console.log('Text pasted');
     },
   },
 };

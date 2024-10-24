@@ -1,7 +1,7 @@
 <template>
     <h2>{{title}}</h2>
     <p>{{description}}</p>
-    <textarea :class="['text-field', { isLongField: isLongField, readonly: readonly}]" :readonly="readonly" :placeholder="placeholder"></textarea>
+    <textarea ref="textArea" :class="['text-field', { isLongField: isLongField, readonly: readonly}]" :readonly="readonly" :placeholder="placeholder"></textarea>
 </template>
 
 <script>
@@ -51,7 +51,6 @@ h2{
 p {
     font-size: 0.8rem;
     text-align: left;
-    font-size: 1rem;
     color: lightslategray;
 }
 

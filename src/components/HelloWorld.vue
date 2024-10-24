@@ -49,7 +49,9 @@
   <div class="exampleTextfields">
     <TextField
       readonly
-      placeholder="Enter your message here"/>
+      title="Read-only text field"
+      description="This is a read-only text field"
+      placeholder="Enter your message here">This is a text</TextField>
       <MultipurposeButton
       buttonType="left"
       :onClick="copyText">Copy</MultipurposeButton>
@@ -111,5 +113,10 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center; /* Ensure sliders are centered within the container */
+}
+
+.exampleTextfields {
+  width: 75%; /* Set the width to 75% of the screen */
+  margin: 0 auto; /* Center the text fields on the page */
 }
 </style>

@@ -1,86 +1,36 @@
   <template>
     <div class="exampleButtons">
-      <MultipurposeButton
-        buttonType="left"
-        :toggleable="true"
-        :onClick="handleLeftButton"
-      >
+      <MultipurposeButton buttonType="left" :toggleable="true" :onClick="handleLeftButton">
         Left
       </MultipurposeButton>
-
-  <div class="exampleSliders">
-    <!-- Using the slider with an array of values -->
-    <MultipurposeSlider
-      title="Proficiency Levels"
-      :values="['A1', 'A2', 'B1', 'B2', 'C1', 'C2']"
-      @input="handleSliderInput"
-    />
-
-    <!-- Using the slider with a range -->
-    <MultipurposeSlider
-      title="Maximum words"
-      :min="0"
-      :max="100"
-      @input="handleSliderInput"
-    />
-  </div>
-
-  <div class="exampleTextfields">
-    <TextField
-      placeholder="Enter your message here"/>
-      <MultipurposeButton
-        buttonType="middle"
-        :onClick="handleMiddleButton"
-      >
+      <MultipurposeButton buttonType="middle" :onClick="handleMiddleButton">
         Middle
       </MultipurposeButton>
 
-      <MultipurposeButton
-        buttonType="right"
-        :toggleable="true"
-        :onClick="handleRightButton"
-      >
+      <MultipurposeButton buttonType="right" :toggleable="true" :onClick="handleRightButton">
         Right
       </MultipurposeButton>
 
-      <MultipurposeButton
-        buttonType="single"
-        :onClick="handleSingleButton"
-        >
+      <MultipurposeButton buttonType="single" :onClick="handleSingleButton">
         Single
       </MultipurposeButton>
     </div>
 
     <div class="exampleSliders">
       <!-- Using the slider with an array of values -->
-      <MultipurposeSlider
-        :values="['A1', 'A2', 'B1', 'B2', 'C1', 'C2']"
-        @input="handleSliderInput"
-      />
+      <MultipurposeSlider title="Proficiency Levels" :values="['A1', 'A2', 'B1', 'B2', 'C1', 'C2']"
+        @input="handleSliderInput" />
 
       <!-- Using the slider with a range -->
-      <MultipurposeSlider
-        :min="0"
-        :max="100"
-        @input="handleSliderInput"
-      />
+      <MultipurposeSlider title="Maximum words" :min="0" :max="100" @input="handleSliderInput" />
     </div>
 
     <div class="exampleTextfields">
-      <TextField
-        readonly
-        title="Read-only text field"
-        description="This is a read-only text field"
+      <TextField readonly title="Read-only text field" description="This is a read-only text field"
         placeholder="Enter your message here">This is a text</TextField>
-        <MultipurposeButton
-        buttonType="left"
-        :onClick="copyText">Copy</MultipurposeButton>
-        <MultipurposeButton
-        buttonType="right"
-        :onClick="paste">Paste</MultipurposeButton>
-      <TextField
-        ref="textArea"
-        :isLongField="true"/>
+      <MultipurposeButton buttonType="left" :onClick="copyText">Copy</MultipurposeButton>
+      <MultipurposeButton buttonType="right" :onClick="paste">Paste</MultipurposeButton>
+      <TextField ref="textArea" :isLongField="true" />
     </div>
   </template>
 

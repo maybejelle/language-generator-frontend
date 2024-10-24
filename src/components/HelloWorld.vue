@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="exampleButtons">
     <MultipurposeButton
       buttonType="left"
       :toggleable="true"
@@ -46,17 +46,24 @@
     />
   </div>
 
-
+  <div class="exampleTextfields">
+    <TextField
+      placeholder="Enter your message here"/>
+    <TextField
+      :isLongField="true"/>
+  </div>
 </template>
 
 <script>
 import MultipurposeButton from './MultipurposeButton.vue';
 import MultipurposeSlider from './MultipurposeSlider.vue';
+import TextField from './TextField.vue';
 
 export default {
   components: {
     MultipurposeButton,
-    MultipurposeSlider
+    MultipurposeSlider,
+    TextField
   },
   methods: {
     handleLeftButton(isActive) {

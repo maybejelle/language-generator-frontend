@@ -1,5 +1,7 @@
 # language-proficiency-app
 
+> Make sure to clone and run the language-proficiency-app-proxy before running this application to enable API communication!
+
 ## Project setup
 ```
 npm install

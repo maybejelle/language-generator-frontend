@@ -1,59 +1,60 @@
 <template>
-    <button
-      :class="['button', buttonType, { active: isActive, pulse: pulseEffect }]"
-      @click="handleClick"
-      @animationend="resetPulse"
-    >
-      <slot></slot>
-    </button>
-  </template>
-  
-  <script>
-  export default {
-    props: {
-      buttonType: {
-        type: String,
-        default: 'single', // added 'single' type
-        validator(value) {
-          return ['left', 'middle', 'right', 'single'].includes(value);
-        },
-      },
-      toggleable: {
-        type: Boolean,
-        default: false, // If the button is toggleable or not
-      },
-      onClick: {
-        type: Function,
-        default: null, // Function to call on click
+  <button
+    :class="['button', buttonType, { active: isActiveProp, pulse: pulseEffect }]"
+    @click="handleClick"
+    @animationend="resetPulse"
+  >
+    <slot></slot>
+  </button>
+</template>
+
+<script>
+export default {
+  props: {
+    buttonType: {
+      type: String,
+      default: 'single',
+      validator(value) {
+        return ['left', 'middle', 'right', 'single'].includes(value);
       },
     },
-    data() {
-      return {
-        isActive: false, // Tracks toggle state
-        pulseEffect: false, // Tracks background pulse effect
-      };
+    toggleable: {
+      type: Boolean,
+      default: false,
     },
-    methods: {
-      handleClick() {
-        if (this.toggleable) {
-          this.isActive = !this.isActive; // Toggle state
-          if (this.onClick) {
-            this.onClick(this.isActive); // Return boolean state
-          }
-        } else {
-          this.pulseEffect = true; // Trigger pulse effect for non-toggleable buttons
-          if (this.onClick) {
-            this.onClick(); // Call function without toggle
-          }
+    isActiveProp: { // New prop to control active state
+      type: Boolean,
+      default: false,
+    },
+    onClick: {
+      type: Function,
+      default: null,
+    },
+  },
+  data() {
+    return {
+      pulseEffect: false,
+    };
+  },
+  methods: {
+    handleClick() {
+      if (this.toggleable) {
+        if (this.onClick) {
+          this.onClick(!this.isActiveProp);
         }
-      },
-      resetPulse() {
-        // Remove the pulse effect once the animation completes
-        this.pulseEffect = false;
-      },
+      } else {
+        this.pulseEffect = true;
+        if (this.onClick) {
+          this.onClick();
+        }
+      }
     },
-  };
-  </script>
+    resetPulse() {
+      this.pulseEffect = false;
+    },
+  },
+};
+</script>
   
   <style scoped>
   .button {

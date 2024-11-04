@@ -3,11 +3,11 @@
 
     <h1>Language Level Generator</h1>
     <div class="wrapper">
-        <div class="barometer" v-if="!hidden">
+        <div class="evaluateTab" v-if="showEvaluate">
             <img src="../assets/barometer.webp" alt="barometer" title="language level meter">
             <TextField readonly title="feedback" is-long-field="true" />
         </div>
-        <div class="generateText" v-if="generate">
+        <div class="generateTab" v-if="showGenerate">
             <div>
                 <MultipurposeButton button-type="left">Generate</MultipurposeButton>
                 <MultipurposeButton button-type="right">Regenerate</MultipurposeButton>
@@ -29,18 +29,20 @@
             <TextField title="sources" is-long-field="true" readonly description="source list, if applicable">
             </TextField>
         </div>
-        <div class="textfield">
+        <div class="textEditorField">
             <div class="buttons">
                 <div>
                     <MultipurposeButton button-type="left" :onclick="clearText">Undo</MultipurposeButton>
                     <MultipurposeButton button-type="right">Redo</MultipurposeButton>
                 </div>
                 <div>
-                    <MultipurposeButton button-type="left" :toggleable="true">Evaluate</MultipurposeButton>
-                    <MultipurposeButton button-type="middle" :toggleable="true" :onclick="displayTextOnly">Text
+                    <MultipurposeButton button-type="left" :toggleable="true" :isActiveProp="showEvaluate" @click="showEvaluateTab">Evaluate
                     </MultipurposeButton>
-                    <MultipurposeButton button-type="right" :toggleable="true" :onclick="showGenerateTab">Generate
+                    <MultipurposeButton button-type="middle" :toggleable="false" @click="displayTextOnly">Text
                     </MultipurposeButton>
+                    <MultipurposeButton button-type="right" :toggleable="true" :isActiveProp="showGenerate" @click="showGenerateTab">Generate
+                    </MultipurposeButton>
+
                 </div>
                 <div>
                     <MultipurposeButton button-type="left" :onclick="copyText">Copy</MultipurposeButton>
@@ -68,9 +70,9 @@ export default {
     },
     data() {
         return {
-            hidden: false,
-            generate: false
-        }
+            showEvaluate: false,
+            showGenerate: false,
+        };
     },
     methods: {
         copyText() {
@@ -86,18 +88,19 @@ export default {
         },
         displayTextOnly() {
             console.log('Display text only');
-            this.hidden = !this.hidden;
-        },
-        clearText() {
-            console.log('Clear text');
-            this.$refs.textArea.$refs.textArea.value = '';
+            this.showEvaluate = false;
+            this.showGenerate = false;
         },
         showGenerateTab() {
             console.log('Show generate tab');
-            this.generate = !this.generate;
-            this.hidden = !this.hidden;
+            this.showGenerate = !this.showGenerate;
+        },
+        showEvaluateTab() {
+            console.log('Show evaluate tab');
+            this.showEvaluate = !this.showEvaluate;
         }
     }
+
 }
 
 </script>
@@ -125,19 +128,19 @@ img {
     display: none;
 }
 
-.barometer {
+.evaluateTab {
     border-right: solid 1px black;
     width: 30rem;
     padding: 1rem;
 }
 
-.generateText {
+.generateTab {
     border-right: solid 1px black;
     width: 30rem;
     padding: 1rem;
 }
 
-.textfield {
+.textEditorField {
     width: 100%;
     padding: 1rem;
 }

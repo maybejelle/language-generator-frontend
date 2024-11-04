@@ -58,7 +58,7 @@ export default {
   
   <style scoped>
   .button {
-    padding: 10px 20px;
+    padding: 1rem 2rem;
     border: none;
     cursor: pointer;
     transition: background-color 0.3s ease;

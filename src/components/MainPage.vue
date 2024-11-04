@@ -30,15 +30,15 @@
             </TextField>
         </div>
         <div class="textEditorField">
-            <div class="buttons">
+            <div class="mainActionButtons">
                 <div>
                     <MultipurposeButton button-type="left" :onclick="clearText">Undo</MultipurposeButton>
                     <MultipurposeButton button-type="right">Redo</MultipurposeButton>
                 </div>
-                <div>
+                <div class="coreActionButtons">
                     <MultipurposeButton button-type="left" :toggleable="true" :isActiveProp="showEvaluate" @click="showEvaluateTab">Evaluate
                     </MultipurposeButton>
-                    <MultipurposeButton button-type="middle" :toggleable="false" @click="displayTextOnly">Text
+                    <MultipurposeButton button-type="middle" :toggleable="false" @click="displayTextOnly">Text Only
                     </MultipurposeButton>
                     <MultipurposeButton button-type="right" :toggleable="true" :isActiveProp="showGenerate" @click="showGenerateTab">Generate
                     </MultipurposeButton>
@@ -145,9 +145,13 @@ img {
     padding: 1rem;
 }
 
-.buttons {
+.mainActionButtons {
     display: flex;
     justify-content: space-between;
+}
+
+.coreActionButtons button {
+    padding: 1rem 5rem 1rem 5rem;
 }
 
 select {

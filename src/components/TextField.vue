@@ -38,6 +38,7 @@ export default {
 <style scoped>
 textarea.isLongField {
     width: 100%;
+    height: 10rem;
     display: block;
     resize: vertical;
 }
@@ -68,7 +69,6 @@ textarea  {
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
-    margin-top: 10px;
     resize: none;
     display: block;
 

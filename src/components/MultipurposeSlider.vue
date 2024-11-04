@@ -102,7 +102,6 @@
     font-size: 18px;
     font-weight: bold;
     margin-bottom: 1rem;
-    text-align: center;
   }
   
   .slider-values {

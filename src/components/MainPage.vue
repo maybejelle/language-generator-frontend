@@ -10,7 +10,7 @@
         <div class="generateTab" v-if="showGenerate">
             <div>
                 <MultipurposeButton button-type="left" @click="generateNewText">Generate</MultipurposeButton>
-                <MultipurposeButton button-type="right">Regenerate</MultipurposeButton>
+                <MultipurposeButton button-type="right" @click="regenerateText">Regenerate</MultipurposeButton>
             </div>
 
             <MultipurposeSlider v-model="maxWordLengthValue" title="word length range" min="0" max="255"></MultipurposeSlider>
@@ -76,7 +76,7 @@ export default {
             showGenerate: false,
             selectedLanguage: 'english',
             maxWordLengthValue: 150,
-            proficiencyLevelValue: 'A1',
+            proficiencyLevelValue: 'C1',
             subjectTextValue: 'Random subject',
             additionalParamsTextValue: 'N/A',
             mainTextValue: 'lorem ipsum',
@@ -131,6 +131,43 @@ export default {
                         language,
                         subject,
                         additionalParams
+                    })
+                });
+
+                const data = await response.json();
+                this.mainTextValue = data.content && data.content[0].text
+                    ? data.content[0].text
+                    : 'No response text available';
+
+            } catch (error) {
+                console.error('Error calling proxy server:', error);
+                this.responseText = 'Error calling API';
+            }
+        },
+        async regenerateText() {
+            console.log('Regenerating text');
+            const prompt = "Tweak the main text slightly, based on the following parameters. Adjust or generate words, grammar or language wherever neccesary to match the parameters as best as possible. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT";
+            
+            // Gather data to send in the request
+            const maxWordsLength = this.maxWordLengthValue;
+            const proficiencyLevel = this.proficiencyLevelValue;
+            const language = this.selectedLanguage;
+            const additionalParams = this.additionalParamsTextValue;
+            const mainText = this.mainTextValue;
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/anthropic/claude', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt,
+                        maxWordsLength,
+                        proficiencyLevel,
+                        language,
+                        additionalParams,
+                        mainText
                     })
                 });
 

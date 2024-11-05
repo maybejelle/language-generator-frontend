@@ -3,32 +3,36 @@
 
     <h1>Language Level Generator</h1>
     <div class="wrapper">
-        <div class="evaluateTab" v-if="showEvaluate">
-            <img src="../assets/barometer.webp" alt="barometer" title="language level meter">
-            <TextField readonly title="feedback" is-long-field="true" />
-        </div>
-        <div class="generateTab" v-if="showGenerate">
-            <div>
-                <MultipurposeButton button-type="left">Generate</MultipurposeButton>
-                <MultipurposeButton button-type="right">Regenerate</MultipurposeButton>
+        <Transition>
+            <div class="evaluateTab" v-if="showEvaluate">
+                <img src="../assets/barometer.webp" alt="barometer" title="language level meter">
+                <TextField readonly title="feedback" is-long-field="true" />
             </div>
-            <MultipurposeSlider title="word length range" min="0" max="255"></MultipurposeSlider>
+        </Transition>
+        <Transition>
+            <div class="generateTab" v-if="showGenerate">
+                <div>
+                    <MultipurposeButton button-type="left">Generate</MultipurposeButton>
+                    <MultipurposeButton button-type="right">Regenerate</MultipurposeButton>
+                </div>
+                <MultipurposeSlider title="word length range" min="0" max="255"></MultipurposeSlider>
 
-            <MultipurposeSlider title="Proficiency Levels" :values="['A1', 'A2', 'B1', 'B2', 'C1', 'C2']" />
+                <MultipurposeSlider title="Proficiency Levels" :values="['A1', 'A2', 'B1', 'B2', 'C1', 'C2']" />
 
-            <select>
-                <option value="french">French</option>
-                <option value="english">English</option>
-                <option value="dutch">Dutch</option>
-            </select>
+                <select>
+                    <option value="french">French</option>
+                    <option value="english">English</option>
+                    <option value="dutch">Dutch</option>
+                </select>
 
-            <TextField title="Subject"></TextField>
+                <TextField title="Subject"></TextField>
 
-            <TextField title="additional parameters" description="e.g 'past tense, informal' "></TextField>
+                <TextField title="additional parameters" description="e.g 'past tense, informal' "></TextField>
 
-            <TextField title="sources" is-long-field="true" readonly description="source list, if applicable">
-            </TextField>
-        </div>
+                <TextField title="sources" is-long-field="true" readonly description="source list, if applicable">
+                </TextField>
+            </div>
+        </Transition>
         <div class="textEditorField">
             <div class="mainActionButtons">
                 <div>
@@ -36,11 +40,13 @@
                     <MultipurposeButton button-type="right">Redo</MultipurposeButton>
                 </div>
                 <div class="coreActionButtons">
-                    <MultipurposeButton button-type="left" :toggleable="true" :isActiveProp="showEvaluate" @click="showEvaluateTab">Evaluate
+                    <MultipurposeButton button-type="left" :toggleable="true" :isActiveProp="showEvaluate"
+                        @click="showEvaluateTab">Evaluate
                     </MultipurposeButton>
                     <MultipurposeButton button-type="middle" :toggleable="false" @click="displayTextOnly">Text Only
                     </MultipurposeButton>
-                    <MultipurposeButton button-type="right" :toggleable="true" :isActiveProp="showGenerate" @click="showGenerateTab">Generate
+                    <MultipurposeButton button-type="right" :toggleable="true" :isActiveProp="showGenerate"
+                        @click="showGenerateTab">Generate
                     </MultipurposeButton>
 
                 </div>
@@ -157,5 +163,16 @@ img {
 select {
     width: 100%;
     padding: 1rem;
+}
+
+.v-enter-active,
+.v-leave-active {
+    transition: width 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+    width: 0;
+    opacity: 0;
 }
 </style>

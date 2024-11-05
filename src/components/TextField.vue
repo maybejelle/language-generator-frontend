@@ -1,14 +1,23 @@
 <template>
-    <h2>{{title}}</h2>
-    <p>{{description}}</p>
-    <textarea ref="textArea" :class="['text-field', { isLongField: isLongField, readonly: readonly}]" :readonly="readonly" :placeholder="placeholder"></textarea>
+    <h2>{{ title }}</h2>
+    <p>{{ description }}</p>
+    <textarea
+        ref="textArea"
+        :class="['text-field', { isLongField: isLongField, readonly: readonly }]"
+        :readonly="readonly"
+        :placeholder="placeholder"
+        :value="modelValue"              
+        @input="onInput"                 
+    ></textarea>
 </template>
 
 <script>
-
-
 export default {
     props: {
+        modelValue: {
+            type: String,
+            default: '',
+        },
         isLongField: {
             type: Boolean,
             default: false,
@@ -30,9 +39,12 @@ export default {
             default: '',
         },
     },
+    methods: {
+        onInput(event) {
+            this.$emit('update:modelValue', event.target.value);
+        },
+    },
 };
-
-
 </script>
 
 <style scoped>
@@ -43,7 +55,7 @@ textarea.isLongField {
     resize: vertical;
 }
 
-h2{
+h2 {
     font-size: 1rem;
     color: #333;
     text-align: left;
@@ -55,14 +67,12 @@ p {
     color: lightslategray;
 }
 
-
-
 .readonly {
     background-color: #f0f0f0;
     cursor: not-allowed;
 }
 
-textarea  {
+textarea {
     width: 100%;
     padding: 5px;
     font-size: 1rem;
@@ -71,6 +81,5 @@ textarea  {
     box-sizing: border-box;
     resize: none;
     display: block;
-
 }
 </style>

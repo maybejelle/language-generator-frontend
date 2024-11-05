@@ -51,7 +51,6 @@ export default {
       default: 0, // Default value for the slider position
     }
   },
-
   data() {
     return {
       currentIndex: this.value, // Sync `currentIndex` with `value`
@@ -82,7 +81,7 @@ export default {
   methods: {
     handleInput() {
       const value = this.isArray ? this.values[this.currentIndex] : this.currentIndex;
-      this.$emit('input', value); // Emit the current value to the parent component
+      this.$emit('update', value); // Emit the current value to the parent component
     },
   },
 };

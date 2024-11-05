@@ -13,8 +13,8 @@
                 <MultipurposeButton button-type="right" @click="regenerateText">Regenerate</MultipurposeButton>
             </div>
 
-            <MultipurposeSlider v-model="maxWordLengthValue" title="word length range" min="0" max="255"></MultipurposeSlider>
-            <MultipurposeSlider v-model="proficiencyLevelValue" title="Proficiency Levels" :values="['A1', 'A2', 'B1', 'B2', 'C1', 'C2']" />
+            <MultipurposeSlider v-model="maxWordLengthValue" @update="$event => (maxWordLengthValue = $event)" title="word length range" min="0" max="255"></MultipurposeSlider>
+            <MultipurposeSlider v-model="proficiencyLevelValue" @update="$event => (proficiencyLevelValue = $event)" title="Proficiency Levels" :values="['A1', 'A2', 'B1', 'B2', 'C1', 'C2']" />
 
             <select v-model="selectedLanguage">
                 <option value="french">French</option>
@@ -75,8 +75,8 @@ export default {
             showEvaluate: false,
             showGenerate: false,
             selectedLanguage: 'english',
-            maxWordLengthValue: 150,
-            proficiencyLevelValue: 'C1',
+            maxWordLengthValue: 0,
+            proficiencyLevelValue: 'A1',
             subjectTextValue: 'Random subject',
             additionalParamsTextValue: 'N/A',
             mainTextValue: 'lorem ipsum',

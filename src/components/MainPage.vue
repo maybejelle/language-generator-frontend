@@ -11,7 +11,7 @@
     <div class="wrapper">
         <Transition>
             <div class="evaluateTab" v-if="showEvaluate">
-                <img src="../assets/barometer.webp" alt="barometer" title="language level meter">
+                <ProficiencyMeter :selectedImage="evaluatedProficiencyLevel" />
                 <TextField readonly title="feedback" is-long-field="true" v-model="feedbackValue" />
             </div>
         </Transition>
@@ -79,13 +79,15 @@
 <script>
 import MultipurposeButton from './MultipurposeButton.vue';
 import MultipurposeSlider from './MultipurposeSlider.vue';
+import ProficiencyMeter from './ProficiencyMeter.vue';
 import TextField from './TextField.vue';
 
 export default {
     components: {
         TextField,
         MultipurposeButton,
-        MultipurposeSlider
+        MultipurposeSlider,
+        ProficiencyMeter
     },
     data() {
         return {
@@ -99,8 +101,9 @@ export default {
             proficiencyLevelValue: 'A1',
             subjectTextValue: 'Random subject',
             additionalParamsTextValue: 'N/A',
-            mainTextValue: '',
-            feedbackValue: 'Generating feedback...'
+            mainTextValue: 'The quick brown fox jumps over the lazy dog and the cat.',
+            feedbackValue: 'Generating feedback...',
+            evaluatedProficiencyLevel: 'NONE',
         };
     },
     methods: {
@@ -207,8 +210,9 @@ export default {
                     ? data.content[0].text
                     : 'No response text available';
 
-                    
-                
+                this.showEvaluate = false;
+
+
             } catch (error) {
                 console.error('Error calling proxy server:', error);
                 this.responseText = 'Error calling API';
@@ -249,6 +253,8 @@ export default {
                     ? data.content[0].text
                     : 'No response text available';
 
+                this.showEvaluate = false;
+
             } catch (error) {
                 console.error('Error calling proxy server:', error);
                 this.responseText = 'Error calling API';
@@ -282,9 +288,19 @@ export default {
                     ? data.content[0].text
                     : 'No response text available';
 
+
+                // Use regex to find the first CEFR level in the feedbackValue
+                const match = this.feedbackValue.match(/\b(A1|A2|B1|B2|C1|C2)\b/);
+                if (match) {
+                    this.evaluatedProficiencyLevel = match[0];
+                } else {
+                    this.evaluatedProficiencyLevel = 'NONE';
+                }
+
             } catch (error) {
                 console.error('Error calling proxy server:', error);
                 this.feedbackValue = 'Error calling API';
+                this.evaluatedProficiencyLevel = 'NONE';
             }
         },
     }

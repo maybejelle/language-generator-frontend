@@ -45,8 +45,8 @@
         <div class="textEditorField">
             <div class="mainActionButtons">
                 <div>
-                    <MultipurposeButton button-type="left" :onclick="clearText">Undo</MultipurposeButton>
-                    <MultipurposeButton button-type="right">Redo</MultipurposeButton>
+                    <MultipurposeButton button-type="left" :onclick="undoChanges">Undo</MultipurposeButton>
+                    <MultipurposeButton button-type="right" :onclick="redoChanges">Redo</MultipurposeButton>
                 </div>
                 <div class="coreActionButtons">
                     <MultipurposeButton button-type="left" :toggleable="true" :isActiveProp="showEvaluate"
@@ -107,6 +107,42 @@ export default {
         };
     },
     methods: {
+        saveToCache() {
+            let undoHistory = JSON.parse(localStorage.getItem('undo-history')) || [];
+
+            undoHistory.push(this.mainTextValue);
+
+            let redoHistory = [];
+
+            localStorage.setItem('undo-history', JSON.stringify(undoHistory));
+            localStorage.setItem('redo-history', JSON.stringify(redoHistory));
+
+        },
+        undoChanges() {
+            let undoHistory = JSON.parse(localStorage.getItem('undo-history')) || [];
+            let redoHistory = JSON.parse(localStorage.getItem('redo-history')) || [];
+
+            if (undoHistory.length > 0) {
+                redoHistory.push(this.mainTextValue);
+                this.mainTextValue = undoHistory.pop();
+                localStorage.setItem('undo-history', JSON.stringify(undoHistory));
+                localStorage.setItem('redo-history', JSON.stringify(redoHistory));
+            }
+
+            this.responseWordCount = this.mainTextValue.split(' ').length;
+        },
+        redoChanges() {
+            let undoHistory = JSON.parse(localStorage.getItem('undo-history')) || [];
+            let redoHistory = JSON.parse(localStorage.getItem('redo-history')) || [];
+
+            if (redoHistory.length > 0) {
+                undoHistory.push(this.mainTextValue);
+                this.mainTextValue = redoHistory.pop();
+                localStorage.setItem('undo-history', JSON.stringify(undoHistory));
+                localStorage.setItem('redo-history', JSON.stringify(redoHistory));
+            }
+            this.responseWordCount = this.mainTextValue.split(' ').length;
+        },
         copyText() {
             console.log('Text copied');
             const text = this.$refs.textArea.$refs.textArea.value;
@@ -164,7 +200,7 @@ export default {
                 });
 
                 const data = await response.json();
-                console.log(data);
+                this.saveToCache();
                 this.inputTokens = data.usage.input_tokens;
                 this.outputTokens = data.usage.output_tokens;
                 this.responseWordCount = data.content && data.content[0].text
@@ -212,6 +248,7 @@ export default {
                 });
 
                 const data = await response.json();
+                this.saveToCache();
                 this.mainTextValue = data.content && data.content[0].text
                     ? data.content[0].text
                     : 'No response text available';

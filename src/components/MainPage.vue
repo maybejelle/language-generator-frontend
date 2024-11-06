@@ -1,7 +1,13 @@
 <template>
 
-
-    <h1>Language Level Generator</h1>
+    <div class="header">
+        <h1>Language Level Generator</h1>
+        <select>
+            <option value="claude">Claude</option>
+            <option value="openai">OpenAI</option>
+            <option value="gpt3">GPT-3</option>
+        </select>
+    </div>
     <div class="wrapper">
         <div class="evaluateTab" v-if="showEvaluate">
             <img src="../assets/barometer.webp" alt="barometer" title="language level meter">
@@ -26,9 +32,10 @@
 
             <TextField v-model="additionalParamsTextValue" title="additional parameters" description="e.g 'past tense, informal' "></TextField>
 
-            <TextField title="sources" is-long-field="true" readonly description="source list, if applicable">
-            </TextField>
-        </div>
+                <TextField title="sources" is-long-field="true" readonly description="source list, if applicable">
+                </TextField>
+            </div>
+        </Transition>
         <div class="textEditorField">
             <div class="mainActionButtons">
                 <div>
@@ -51,7 +58,11 @@
                     <MultipurposeButton button-type="right" :onclick="pasteText">Paste</MultipurposeButton>
                 </div>
             </div>
-            <TextField v-model="mainTextValue" ref="textArea" :is-long-field="true"></TextField>
+            <TextField ref="textArea" v-model="mainTextValue" :is-long-field="true"></TextField>
+            <div class="details">
+                <p>word count : {{ responseWordCount }}</p>
+                <p>Tokens : {{ inputTokens }} / {{ outputTokens }}</p>
+            </div>
         </div>
     </div>
 
@@ -74,6 +85,9 @@ export default {
         return {
             showEvaluate: false,
             showGenerate: false,
+            responseWordCount: 0,
+            inputTokens: 0,
+            outputTokens: 0
             selectedLanguage: 'english',
             maxWordLengthValue: 100,
             proficiencyLevelValue: 'A1',
@@ -193,8 +207,20 @@ export default {
 
 
 <style scoped>
-h1 {
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
     border-bottom: 1px solid black;
+}
+
+.header select{
+    width: 20rem;
+}
+h1 {
+    
     margin: 0;
     padding: 1rem;
 }
@@ -236,12 +262,27 @@ img {
     justify-content: space-between;
 }
 
-.coreActionButtons button {
-    padding: 1rem 5rem 1rem 5rem;
-}
 
 select {
     width: 100%;
     padding: 1rem;
+}
+
+.details {
+    display: flex;
+    justify-content: space-between;
+    color: grey;
+    font-size: 0.8rem;
+}
+
+.v-enter-active,
+.v-leave-active {
+    transition: width 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+    width: 0;
+    opacity: 0;
 }
 </style>

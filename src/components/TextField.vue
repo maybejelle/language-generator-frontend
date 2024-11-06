@@ -50,7 +50,7 @@ export default {
 <style scoped>
 textarea.isLongField {
     width: 100%;
-    height: 10rem;
+    height: 25rem;
     display: block;
     resize: vertical;
 }

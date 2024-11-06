@@ -13,7 +13,7 @@
                 <MultipurposeButton button-type="right" @click="regenerateText">Regenerate</MultipurposeButton>
             </div>
 
-            <MultipurposeSlider v-model="maxWordLengthValue" @update="$event => (maxWordLengthValue = $event)" title="word length range" min="0" max="255"></MultipurposeSlider>
+            <MultipurposeSlider v-model="maxWordLengthValue" @update="$event => (maxWordLengthValue = $event)" title="word length range" min="100" max="500"></MultipurposeSlider>
             <MultipurposeSlider v-model="proficiencyLevelValue" @update="$event => (proficiencyLevelValue = $event)" title="Proficiency Levels" :values="['A1', 'A2', 'B1', 'B2', 'C1', 'C2']" />
 
             <select v-model="selectedLanguage">
@@ -75,7 +75,7 @@ export default {
             showEvaluate: false,
             showGenerate: false,
             selectedLanguage: 'english',
-            maxWordLengthValue: 0,
+            maxWordLengthValue: 100,
             proficiencyLevelValue: 'A1',
             subjectTextValue: 'Random subject',
             additionalParamsTextValue: 'N/A',
@@ -109,7 +109,7 @@ export default {
         },
         async generateNewText() {
             console.log('Generating new text');
-            const prompt = "Generate a new text, based on the following parameters";
+            const prompt = "Generate a new text, based on the following parameters. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT";
             
             // Gather data to send in the request
             const maxWordsLength = this.maxWordLengthValue;
@@ -117,6 +117,8 @@ export default {
             const language = this.selectedLanguage;
             const subject = this.subjectTextValue;
             const additionalParams = this.additionalParamsTextValue;
+
+            // STORE CURRENT TEXT IN LOCAL STORAGE
             
             try {
                 const response = await fetch('http://localhost:3000/api/anthropic/claude', {
@@ -154,6 +156,8 @@ export default {
             const language = this.selectedLanguage;
             const additionalParams = this.additionalParamsTextValue;
             const mainText = this.mainTextValue;
+
+            // STORE CURRENT TEXT IN LOCAL STORAGE
             
             try {
                 const response = await fetch('http://localhost:3000/api/anthropic/claude', {

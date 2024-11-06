@@ -9,31 +9,28 @@
         </select>
     </div>
     <div class="wrapper">
-        <Transition>
-            <div class="evaluateTab" v-if="showEvaluate">
-                <img src="../assets/barometer.webp" alt="barometer" title="language level meter">
-                <TextField readonly title="feedback" is-long-field="true" />
+        <div class="evaluateTab" v-if="showEvaluate">
+            <img src="../assets/barometer.webp" alt="barometer" title="language level meter">
+            <TextField readonly title="feedback" is-long-field="true" />
+        </div>
+        <div class="generateTab" v-if="showGenerate">
+            <div>
+                <MultipurposeButton button-type="left" @click="generateNewText">Generate</MultipurposeButton>
+                <MultipurposeButton button-type="right" @click="regenerateText">Regenerate</MultipurposeButton>
             </div>
-        </Transition>
-        <Transition>
-            <div class="generateTab" v-if="showGenerate">
-                <div>
-                    <MultipurposeButton button-type="left">Generate</MultipurposeButton>
-                    <MultipurposeButton button-type="right">Regenerate</MultipurposeButton>
-                </div>
-                <MultipurposeSlider title="word length range" min="0" max="255"></MultipurposeSlider>
 
-                <MultipurposeSlider title="Proficiency Levels" :values="['A1', 'A2', 'B1', 'B2', 'C1', 'C2']" />
+            <MultipurposeSlider v-model="maxWordLengthValue" @update="$event => (maxWordLengthValue = $event)" title="word length range" min="100" max="500"></MultipurposeSlider>
+            <MultipurposeSlider v-model="proficiencyLevelValue" @update="$event => (proficiencyLevelValue = $event)" title="Proficiency Levels" :values="['A1', 'A2', 'B1', 'B2', 'C1', 'C2']" />
 
-                <select>
-                    <option value="french">French</option>
-                    <option value="english">English</option>
-                    <option value="dutch">Dutch</option>
-                </select>
+            <select v-model="selectedLanguage">
+                <option value="french">French</option>
+                <option value="english">English</option>
+                <option value="dutch">Dutch</option>
+            </select>
 
-                <TextField title="Subject"></TextField>
+            <TextField v-model="subjectTextValue" title="Subject"></TextField>
 
-                <TextField title="additional parameters" description="e.g 'past tense, informal' "></TextField>
+            <TextField v-model="additionalParamsTextValue" title="additional parameters" description="e.g 'past tense, informal' "></TextField>
 
                 <TextField title="sources" is-long-field="true" readonly description="source list, if applicable">
                 </TextField>
@@ -61,7 +58,7 @@
                     <MultipurposeButton button-type="right" :onclick="pasteText">Paste</MultipurposeButton>
                 </div>
             </div>
-            <TextField ref="textArea" :is-long-field="true"></TextField>
+            <TextField ref="textArea" v-model="mainTextValue" :is-long-field="true"></TextField>
             <div class="details">
                 <p>word count : {{ responseWordCount }}</p>
                 <p>Tokens : {{ inputTokens }} / {{ outputTokens }}</p>
@@ -91,6 +88,12 @@ export default {
             responseWordCount: 0,
             inputTokens: 0,
             outputTokens: 0
+            selectedLanguage: 'english',
+            maxWordLengthValue: 100,
+            proficiencyLevelValue: 'A1',
+            subjectTextValue: 'Random subject',
+            additionalParamsTextValue: 'N/A',
+            mainTextValue: 'lorem ipsum',
         };
     },
     methods: {
@@ -117,7 +120,85 @@ export default {
         showEvaluateTab() {
             console.log('Show evaluate tab');
             this.showEvaluate = !this.showEvaluate;
-        }
+        },
+        async generateNewText() {
+            console.log('Generating new text');
+            const prompt = "Generate a new text, based on the following parameters. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT";
+            
+            // Gather data to send in the request
+            const maxWordsLength = this.maxWordLengthValue;
+            const proficiencyLevel = this.proficiencyLevelValue;
+            const language = this.selectedLanguage;
+            const subject = this.subjectTextValue;
+            const additionalParams = this.additionalParamsTextValue;
+
+            // STORE CURRENT TEXT IN LOCAL STORAGE
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/anthropic/claude', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt,
+                        maxWordsLength,
+                        proficiencyLevel,
+                        language,
+                        subject,
+                        additionalParams
+                    })
+                });
+
+                const data = await response.json();
+                this.mainTextValue = data.content && data.content[0].text
+                    ? data.content[0].text
+                    : 'No response text available';
+
+            } catch (error) {
+                console.error('Error calling proxy server:', error);
+                this.responseText = 'Error calling API';
+            }
+        },
+        async regenerateText() {
+            console.log('Regenerating text');
+            const prompt = "Tweak the main text slightly, based on the following parameters. Adjust or generate words, grammar or language wherever neccesary to match the parameters as best as possible. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT";
+            
+            // Gather data to send in the request
+            const maxWordsLength = this.maxWordLengthValue;
+            const proficiencyLevel = this.proficiencyLevelValue;
+            const language = this.selectedLanguage;
+            const additionalParams = this.additionalParamsTextValue;
+            const mainText = this.mainTextValue;
+
+            // STORE CURRENT TEXT IN LOCAL STORAGE
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/anthropic/claude', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt,
+                        maxWordsLength,
+                        proficiencyLevel,
+                        language,
+                        additionalParams,
+                        mainText
+                    })
+                });
+
+                const data = await response.json();
+                this.mainTextValue = data.content && data.content[0].text
+                    ? data.content[0].text
+                    : 'No response text available';
+
+            } catch (error) {
+                console.error('Error calling proxy server:', error);
+                this.responseText = 'Error calling API';
+            }
+        },
     }
 
 }

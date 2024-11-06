@@ -14,6 +14,8 @@
                 <img src="../assets/barometer.webp" alt="barometer" title="language level meter">
                 <TextField readonly title="feedback" is-long-field="true" v-model="feedbackValue" />
             </div>
+        </Transition>
+        <Transition>
             <div class="generateTab" v-if="showGenerate">
                 <div>
                     <MultipurposeButton button-type="left" @click="generateNewText">Generate</MultipurposeButton>
@@ -159,6 +161,12 @@ export default {
                 });
 
                 const data = await response.json();
+                console.log(data);
+                this.inputTokens = data.usage.input_tokens;
+                this.outputTokens = data.usage.output_tokens;
+                this.responseWordCount = data.content && data.content[0].text
+                    ? data.content[0].text.split(' ').length
+                    : 0;
                 this.mainTextValue = data.content && data.content[0].text
                     ? data.content[0].text
                     : 'No response text available';

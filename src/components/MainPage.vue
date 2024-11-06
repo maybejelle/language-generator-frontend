@@ -1,7 +1,13 @@
 <template>
 
-
-    <h1>Language Level Generator</h1>
+    <div class="header">
+        <h1>Language Level Generator</h1>
+        <select>
+            <option value="claude">Claude</option>
+            <option value="openai">OpenAI</option>
+            <option value="gpt3">GPT-3</option>
+        </select>
+    </div>
     <div class="wrapper">
         <Transition>
             <div class="evaluateTab" v-if="showEvaluate">
@@ -56,6 +62,10 @@
                 </div>
             </div>
             <TextField ref="textArea" :is-long-field="true"></TextField>
+            <div class="details">
+                <p>word count : {{ responseWordCount }}</p>
+                <p>Tokens : {{ inputTokens }} / {{ outputTokens }}</p>
+            </div>
         </div>
     </div>
 
@@ -78,6 +88,9 @@ export default {
         return {
             showEvaluate: false,
             showGenerate: false,
+            responseWordCount: 0,
+            inputTokens: 0,
+            outputTokens: 0
         };
     },
     methods: {
@@ -113,8 +126,20 @@ export default {
 
 
 <style scoped>
-h1 {
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
     border-bottom: 1px solid black;
+}
+
+.header select{
+    width: 20rem;
+}
+h1 {
+    
     margin: 0;
     padding: 1rem;
 }
@@ -156,13 +181,17 @@ img {
     justify-content: space-between;
 }
 
-.coreActionButtons button {
-    padding: 1rem 5rem 1rem 5rem;
-}
 
 select {
     width: 100%;
     padding: 1rem;
+}
+
+.details {
+    display: flex;
+    justify-content: space-between;
+    color: grey;
+    font-size: 0.8rem;
 }
 
 .v-enter-active,

@@ -9,28 +9,32 @@
         </select>
     </div>
     <div class="wrapper">
-        <div class="evaluateTab" v-if="showEvaluate">
-            <img src="../assets/barometer.webp" alt="barometer" title="language level meter">
-            <TextField readonly title="feedback" is-long-field="true" v-model="feedbackValue" />
-        </div>
-        <div class="generateTab" v-if="showGenerate">
-            <div>
-                <MultipurposeButton button-type="left" @click="generateNewText">Generate</MultipurposeButton>
-                <MultipurposeButton button-type="right" @click="regenerateText">Regenerate</MultipurposeButton>
+        <Transition>
+            <div class="evaluateTab" v-if="showEvaluate">
+                <img src="../assets/barometer.webp" alt="barometer" title="language level meter">
+                <TextField readonly title="feedback" is-long-field="true" v-model="feedbackValue" />
             </div>
+            <div class="generateTab" v-if="showGenerate">
+                <div>
+                    <MultipurposeButton button-type="left" @click="generateNewText">Generate</MultipurposeButton>
+                    <MultipurposeButton button-type="right" @click="regenerateText">Regenerate</MultipurposeButton>
+                </div>
 
-            <MultipurposeSlider v-model="maxWordLengthValue" @update="$event => (maxWordLengthValue = $event)" title="word length range" min="100" max="500"></MultipurposeSlider>
-            <MultipurposeSlider v-model="proficiencyLevelValue" @update="$event => (proficiencyLevelValue = $event)" title="Proficiency Levels" :values="['A1', 'A2', 'B1', 'B2', 'C1', 'C2']" />
+                <MultipurposeSlider v-model="maxWordLengthValue" @update="$event => (maxWordLengthValue = $event)"
+                    title="word length range" min="100" max="500"></MultipurposeSlider>
+                <MultipurposeSlider v-model="proficiencyLevelValue" @update="$event => (proficiencyLevelValue = $event)"
+                    title="Proficiency Levels" :values="['A1', 'A2', 'B1', 'B2', 'C1', 'C2']" />
 
-            <select v-model="selectedLanguage">
-                <option value="french">French</option>
-                <option value="english">English</option>
-                <option value="dutch">Dutch</option>
-            </select>
+                <select v-model="selectedLanguage">
+                    <option value="french">French</option>
+                    <option value="english">English</option>
+                    <option value="dutch">Dutch</option>
+                </select>
 
-            <TextField v-model="subjectTextValue" title="Subject"></TextField>
+                <TextField v-model="subjectTextValue" title="Subject"></TextField>
 
-            <TextField v-model="additionalParamsTextValue" title="additional parameters" description="e.g 'past tense, informal' "></TextField>
+                <TextField v-model="additionalParamsTextValue" title="additional parameters"
+                    description="e.g 'past tense, informal' "></TextField>
 
                 <TextField title="sources" is-long-field="true" readonly description="source list, if applicable">
                 </TextField>
@@ -87,7 +91,7 @@ export default {
             showGenerate: false,
             responseWordCount: 0,
             inputTokens: 0,
-            outputTokens: 0
+            outputTokens: 0,
             selectedLanguage: 'english',
             maxWordLengthValue: 100,
             proficiencyLevelValue: 'A1',
@@ -128,7 +132,7 @@ export default {
         async generateNewText() {
             console.log('Generating new text');
             const prompt = "Generate a new text, based on the following parameters. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT";
-            
+
             // Gather data to send in the request
             const maxWordsLength = this.maxWordLengthValue;
             const proficiencyLevel = this.proficiencyLevelValue;
@@ -137,7 +141,7 @@ export default {
             const additionalParams = this.additionalParamsTextValue;
 
             // STORE CURRENT TEXT IN LOCAL STORAGE, UNLESS IT IS THE SAME AS THE PREVIOUS TEXT
-            
+
             try {
                 const response = await fetch('http://localhost:3000/api/anthropic/claude', {
                     method: 'POST',
@@ -167,7 +171,7 @@ export default {
         async regenerateText() {
             console.log('Regenerating text');
             const prompt = "Tweak the main text slightly, based on the following parameters. Adjust or generate words, grammar or language wherever neccesary to match the parameters as best as possible. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT";
-            
+
             // Gather data to send in the request
             const maxWordsLength = this.maxWordLengthValue;
             const proficiencyLevel = this.proficiencyLevelValue;
@@ -176,7 +180,7 @@ export default {
             const mainText = this.mainTextValue;
 
             // STORE CURRENT TEXT IN LOCAL STORAGE, UNLESS IT IS THE SAME AS THE PREVIOUS TEXT
-            
+
             try {
                 const response = await fetch('http://localhost:3000/api/anthropic/claude', {
                     method: 'POST',
@@ -206,12 +210,12 @@ export default {
         async evaluateText() {
             console.log('Evaluating text');
             const prompt = "Evaluate the main Text. Give suggestions on how to improve it, but keep it compact and to the point. PROVIDE A CEFR LEVEL BEFORE THE FEEDBACK, THEN ONLY OUTPUT THE FEEDBACK, NO OTHER CONTEXT";
-            
+
             // Gather data to send in the request
             const language = this.selectedLanguage;
             const additionalParams = this.additionalParamsTextValue;
             const mainText = this.mainTextValue;
-           
+
             try {
                 const response = await fetch('http://localhost:3000/api/anthropic/claude', {
                     method: 'POST',
@@ -244,7 +248,6 @@ export default {
 
 
 <style scoped>
-
 .header {
     display: flex;
     justify-content: space-between;
@@ -253,11 +256,12 @@ export default {
     border-bottom: 1px solid black;
 }
 
-.header select{
+.header select {
     width: 20rem;
 }
+
 h1 {
-    
+
     margin: 0;
     padding: 1rem;
 }

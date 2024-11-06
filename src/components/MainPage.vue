@@ -5,7 +5,7 @@
     <div class="wrapper">
         <div class="evaluateTab" v-if="showEvaluate">
             <img src="../assets/barometer.webp" alt="barometer" title="language level meter">
-            <TextField readonly title="feedback" is-long-field="true" />
+            <TextField readonly title="feedback" is-long-field="true" v-model="feedbackValue" />
         </div>
         <div class="generateTab" v-if="showGenerate">
             <div>
@@ -79,7 +79,8 @@ export default {
             proficiencyLevelValue: 'A1',
             subjectTextValue: 'Random subject',
             additionalParamsTextValue: 'N/A',
-            mainTextValue: 'lorem ipsum',
+            mainTextValue: 'The quick brown fox jumps over the lazy dog and the cat.',
+            feedbackValue: 'Generating feedback...'
         };
     },
     methods: {
@@ -106,6 +107,9 @@ export default {
         showEvaluateTab() {
             console.log('Show evaluate tab');
             this.showEvaluate = !this.showEvaluate;
+
+            // TODO: ONLY EVALUATE THE TEXT IF IT HAS CHANGED
+            if (this.showEvaluate && true) this.evaluateText();
         },
         async generateNewText() {
             console.log('Generating new text');
@@ -118,7 +122,7 @@ export default {
             const subject = this.subjectTextValue;
             const additionalParams = this.additionalParamsTextValue;
 
-            // STORE CURRENT TEXT IN LOCAL STORAGE
+            // STORE CURRENT TEXT IN LOCAL STORAGE, UNLESS IT IS THE SAME AS THE PREVIOUS TEXT
             
             try {
                 const response = await fetch('http://localhost:3000/api/anthropic/claude', {
@@ -157,7 +161,7 @@ export default {
             const additionalParams = this.additionalParamsTextValue;
             const mainText = this.mainTextValue;
 
-            // STORE CURRENT TEXT IN LOCAL STORAGE
+            // STORE CURRENT TEXT IN LOCAL STORAGE, UNLESS IT IS THE SAME AS THE PREVIOUS TEXT
             
             try {
                 const response = await fetch('http://localhost:3000/api/anthropic/claude', {
@@ -183,6 +187,39 @@ export default {
             } catch (error) {
                 console.error('Error calling proxy server:', error);
                 this.responseText = 'Error calling API';
+            }
+        },
+        async evaluateText() {
+            console.log('Evaluating text');
+            const prompt = "Evaluate the main Text. Give suggestions on how to improve it, but keep it compact and to the point. PROVIDE A CEFR LEVEL BEFORE THE FEEDBACK, THEN ONLY OUTPUT THE FEEDBACK, NO OTHER CONTEXT";
+            
+            // Gather data to send in the request
+            const language = this.selectedLanguage;
+            const additionalParams = this.additionalParamsTextValue;
+            const mainText = this.mainTextValue;
+           
+            try {
+                const response = await fetch('http://localhost:3000/api/anthropic/claude', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt,
+                        language,
+                        additionalParams,
+                        mainText
+                    })
+                });
+
+                const data = await response.json();
+                this.feedbackValue = data.content && data.content[0].text
+                    ? data.content[0].text
+                    : 'No response text available';
+
+            } catch (error) {
+                console.error('Error calling proxy server:', error);
+                this.feedbackValue = 'Error calling API';
             }
         },
     }

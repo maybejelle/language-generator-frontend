@@ -64,7 +64,7 @@ export default {
 
       try {
         // Call the proxy server
-        const response = await fetch('http://localhost:3000/api/anthropic', {
+        const response = await fetch('http://localhost:3000/api/anthropic/claude', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

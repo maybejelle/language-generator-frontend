@@ -65,6 +65,7 @@
                 </div>
             </div>
             <TextField ref="textArea" v-model="mainTextValue" :is-long-field="true"></TextField>
+            <LoadingComponent :is-loading="isLoading"></LoadingComponent>
             <div class="details">
                 <p>word count : {{ responseWordCount }}</p>
                 <p>Tokens : {{ inputTokens }} / {{ outputTokens }}</p>
@@ -77,6 +78,7 @@
 
 
 <script>
+import LoadingComponent from './LoadingComponent.vue';
 import MultipurposeButton from './MultipurposeButton.vue';
 import MultipurposeSlider from './MultipurposeSlider.vue';
 import ProficiencyMeter from './ProficiencyMeter.vue';
@@ -87,10 +89,12 @@ export default {
         TextField,
         MultipurposeButton,
         MultipurposeSlider,
-        ProficiencyMeter
+        ProficiencyMeter,
+        LoadingComponent
     },
     data() {
         return {
+            isLoading: false,
             showEvaluate: false,
             showGenerate: false,
             responseWordCount: 0,
@@ -182,7 +186,7 @@ export default {
             const additionalParams = this.additionalParamsTextValue;
 
             // STORE CURRENT TEXT IN LOCAL STORAGE, UNLESS IT IS THE SAME AS THE PREVIOUS TEXT
-
+            this.isLoading = true;
             try {
                 const response = await fetch('http://localhost:3000/api/anthropic/claude', {
                     method: 'POST',
@@ -216,6 +220,8 @@ export default {
             } catch (error) {
                 console.error('Error calling proxy server:', error);
                 this.responseText = 'Error calling API';
+            }finally {
+                this.isLoading = false;
             }
         },
         async regenerateText() {
@@ -230,7 +236,7 @@ export default {
             const mainText = this.mainTextValue;
 
             // STORE CURRENT TEXT IN LOCAL STORAGE, UNLESS IT IS THE SAME AS THE PREVIOUS TEXT
-
+            this.isLoading = true;
             try {
                 const response = await fetch('http://localhost:3000/api/anthropic/claude', {
                     method: 'POST',
@@ -258,6 +264,8 @@ export default {
             } catch (error) {
                 console.error('Error calling proxy server:', error);
                 this.responseText = 'Error calling API';
+            }finally {
+                this.isLoading = false;
             }
         },
         async evaluateText() {
@@ -268,7 +276,7 @@ export default {
             const language = this.selectedLanguage;
             const additionalParams = this.additionalParamsTextValue;
             const mainText = this.mainTextValue;
-
+            this.isLoading = true;
             try {
                 const response = await fetch('http://localhost:3000/api/anthropic/claude', {
                     method: 'POST',
@@ -301,6 +309,8 @@ export default {
                 console.error('Error calling proxy server:', error);
                 this.feedbackValue = 'Error calling API';
                 this.evaluatedProficiencyLevel = 'NONE';
+            }finally {
+                this.isLoading = false;
             }
         },
     }

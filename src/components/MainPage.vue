@@ -7,10 +7,9 @@
             <option value="English">English</option>
             <option value="Nederlands">Nederlands</option>
         </select>
-        <select>
+        <select v-model="currentModel">
             <option value="claude">Claude</option>
-            <option value="openai">OpenAI</option>
-            <option value="gpt3">GPT-3</option>
+            <option value="chatgpt">Chatgpt (gpt-4o-mini)</option>
         </select>
     </div>
     <div class="wrapper">
@@ -124,7 +123,8 @@ export default {
             mainTextValue: 'The quick brown fox jumps over the lazy dog and the cat.',
             feedbackValue: 'Generating feedback...',
             evaluatedProficiencyLevel: 'NONE',
-            feedback: []
+            feedback: [],
+            currentModel: 'claude' // Default model
         };
     },
     methods: {
@@ -203,7 +203,7 @@ export default {
         async generateNewText() {
             console.log('Generating new text');
             const prompt = "Generate a new text, based on the following parameters. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT";
-            const url = 'http://localhost:3000/api/anthropic/claude';
+            const url = 'http://localhost:3000/api/' + this.currentModel;
             const body = {
                 prompt,
                 maxWordsLength: this.maxWordLengthValue,
@@ -228,7 +228,7 @@ export default {
         async regenerateText() {
             console.log('Regenerating text');
             const prompt = "Tweak the main text slightly, based on the following parameters. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT";
-            const url = 'http://localhost:3000/api/anthropic/claude';
+            const url = 'http://localhost:3000/api/' + this.currentModel;
             const body = {
                 prompt,
                 maxWordsLength: this.maxWordLengthValue,
@@ -250,7 +250,7 @@ export default {
         async evaluateText() {
             console.log('Evaluating text');
             const prompt = "Evaluate the main Text. PROVIDE A CEFR LEVEL BEFORE THE FEEDBACK, THEN ONLY OUTPUT THE FEEDBACK, NO OTHER CONTEXT";
-            const url = 'http://localhost:3000/api/anthropic/claude';
+            const url = 'http://localhost:3000/api/' + this.currentModel;
             const body = {
                 prompt,
                 language: this.currentLanguage,

@@ -22,10 +22,6 @@ export default {
   height: 100%;
 }
 
-html,body{
-  height: 100%;
-  overflow: hidden;
-}
 
 body{
   margin:0;

@@ -2,6 +2,11 @@
 
     <div class="header">
         <h1>Language Level Generator</h1>
+        <select v-model="currentLanguage" @change="changeLanguage">
+            <option value="Français">Français</option>
+            <option value="English">English</option>
+            <option value="Nederlands">Nederlands</option>
+        </select>
         <select>
             <option value="claude">Claude</option>
             <option value="openai">OpenAI</option>
@@ -12,56 +17,53 @@
         <Transition>
             <div class="evaluateTab" v-if="showEvaluate">
                 <ProficiencyMeter :selectedImage="evaluatedProficiencyLevel" />
-                <TextField readonly title="feedback" is-long-field="true" v-model="feedbackValue" />
+                <TextField readonly :title="$t('feedback')" is-long-field="true" v-model="feedbackValue" />
             </div>
         </Transition>
         <Transition>
             <div class="generateTab" v-if="showGenerate">
                 <div>
-                    <MultipurposeButton button-type="left" @click="generateNewText">Generate</MultipurposeButton>
-                    <MultipurposeButton button-type="right" @click="regenerateText">Regenerate</MultipurposeButton>
+                    <MultipurposeButton button-type="left" @click="generateNewText">{{ $t('generate') }}
+                    </MultipurposeButton>
+                    <MultipurposeButton button-type="right" @click="regenerateText">{{ $t('regenerate') }}
+                    </MultipurposeButton>
                 </div>
 
                 <MultipurposeSlider v-model="maxWordLengthValue" @update="$event => (maxWordLengthValue = $event)"
-                    title="word length range" min="100" max="500"></MultipurposeSlider>
+                    :title="$t('wordlength')" min="100" max="500"></MultipurposeSlider>
                 <MultipurposeSlider v-model="proficiencyLevelValue" @update="$event => (proficiencyLevelValue = $event)"
-                    title="Proficiency Levels" :values="['A1', 'A2', 'B1', 'B2', 'C1', 'C2']" />
+                    :title="$t('proficiencylevels')" :values="['A1', 'A2', 'B1', 'B2', 'C1', 'C2']" />
 
-                <select v-model="selectedLanguage">
-                    <option value="french">French</option>
-                    <option value="english">English</option>
-                    <option value="dutch">Dutch</option>
-                </select>
+                <TextField v-model="subjectTextValue" :title="$t('subject')"></TextField>
 
-                <TextField v-model="subjectTextValue" title="Subject"></TextField>
+                <TextField v-model="additionalParamsTextValue" :title="$t('additionalparameters')"
+                    :description="$t('additionalparametersinfo')"></TextField>
 
-                <TextField v-model="additionalParamsTextValue" title="additional parameters"
-                    description="e.g 'past tense, informal' "></TextField>
-
-                <TextField title="sources" is-long-field="true" readonly description="source list, if applicable">
+                <TextField :title="$t('sources')" is-long-field="true" readonly :description="$t('sourcesinfo')">
                 </TextField>
             </div>
         </Transition>
         <div class="textEditorField">
             <div class="mainActionButtons">
                 <div>
-                    <MultipurposeButton button-type="left" :onclick="undoChanges">Undo</MultipurposeButton>
-                    <MultipurposeButton button-type="right" :onclick="redoChanges">Redo</MultipurposeButton>
+                    <MultipurposeButton button-type="left" :onclick="undoChanges">{{ $t('undo') }}</MultipurposeButton>
+                    <MultipurposeButton button-type="right" :onclick="redoChanges">{{ $t('redo') }}</MultipurposeButton>
                 </div>
                 <div class="coreActionButtons">
                     <MultipurposeButton button-type="left" :toggleable="true" :isActiveProp="showEvaluate"
-                        @click="showEvaluateTab">Evaluate
+                        @click="showEvaluateTab">{{ $t('evaluate') }}
                     </MultipurposeButton>
-                    <MultipurposeButton button-type="middle" :toggleable="false" @click="displayTextOnly">Text Only
+                    <MultipurposeButton button-type="middle" :toggleable="false" @click="displayTextOnly">{{
+                        $t('textonly') }}
                     </MultipurposeButton>
                     <MultipurposeButton button-type="right" :toggleable="true" :isActiveProp="showGenerate"
-                        @click="showGenerateTab">Generate
+                        @click="showGenerateTab">{{ $t('generate') }}
                     </MultipurposeButton>
 
                 </div>
                 <div>
-                    <MultipurposeButton button-type="left" :onclick="copyText">Copy</MultipurposeButton>
-                    <MultipurposeButton button-type="right" :onclick="pasteText">Paste</MultipurposeButton>
+                    <MultipurposeButton button-type="left" :onclick="copyText">{{ $t('copy') }}</MultipurposeButton>
+                    <MultipurposeButton button-type="right" :onclick="pasteText">{{ $t('paste') }}</MultipurposeButton>
                 </div>
             </div>
             <TextField ref="textArea" v-model="mainTextValue" :is-long-field="true"></TextField>
@@ -92,6 +94,14 @@ export default {
         ProficiencyMeter,
         LoadingComponent
     },
+    mounted() {
+        if (localStorage.getItem("locale")) {
+            this.$i18n.locale = localStorage.getItem("locale");
+            this.currentLanguage = this.$i18n.locale;
+        } else {
+            localStorage.setItem("locale", this.currentLanguage);
+        }
+    },
     data() {
         return {
             isLoading: false,
@@ -100,7 +110,7 @@ export default {
             responseWordCount: 0,
             inputTokens: 0,
             outputTokens: 0,
-            selectedLanguage: 'english',
+            currentLanguage: this.$i18n.locale,
             maxWordLengthValue: 100,
             proficiencyLevelValue: 'A1',
             subjectTextValue: 'Random subject',
@@ -111,6 +121,10 @@ export default {
         };
     },
     methods: {
+        changeLanguage() {
+            localStorage.setItem("locale", this.currentLanguage);
+            this.$i18n.locale = this.currentLanguage;
+        },
         saveToCache() {
             let undoHistory = JSON.parse(localStorage.getItem('undo-history')) || [];
 
@@ -181,7 +195,7 @@ export default {
             // Gather data to send in the request
             const maxWordsLength = this.maxWordLengthValue;
             const proficiencyLevel = this.proficiencyLevelValue;
-            const language = this.selectedLanguage;
+            const language = this.currentLanguage;
             const subject = this.subjectTextValue;
             const additionalParams = this.additionalParamsTextValue;
 
@@ -231,7 +245,7 @@ export default {
             // Gather data to send in the request
             const maxWordsLength = this.maxWordLengthValue;
             const proficiencyLevel = this.proficiencyLevelValue;
-            const language = this.selectedLanguage;
+            const language = this.currentLanguage;
             const additionalParams = this.additionalParamsTextValue;
             const mainText = this.mainTextValue;
 
@@ -273,7 +287,7 @@ export default {
             const prompt = "Evaluate the main Text. Give suggestions on how to improve it, but keep it compact and to the point. PROVIDE A CEFR LEVEL BEFORE THE FEEDBACK, THEN ONLY OUTPUT THE FEEDBACK, NO OTHER CONTEXT";
 
             // Gather data to send in the request
-            const language = this.selectedLanguage;
+            const language = this.currentLanguage;
             const additionalParams = this.additionalParamsTextValue;
             const mainText = this.mainTextValue;
             this.isLoading = true;

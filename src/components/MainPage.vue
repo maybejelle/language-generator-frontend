@@ -337,7 +337,6 @@ export default {
 <style scoped>
 .header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     padding: 1rem;
     border-bottom: 1px solid black;
@@ -345,6 +344,7 @@ export default {
 
 .header select {
     width: 20rem;
+    margin: 0 1rem;
 }
 
 h1 {

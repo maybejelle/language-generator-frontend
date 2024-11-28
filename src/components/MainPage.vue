@@ -312,10 +312,10 @@ export default {
                     ? data.content[0].text
                     : 'No response text available';
 
-                
-                
-                this.feedback = this.feedbackValue.split('-');
-
+                const splitFeedback = this.feedbackValue.split('-');
+                splitFeedback.shift(); 
+            
+                this.feedback = splitFeedback;
 
 
 

@@ -7,7 +7,8 @@
         :readonly="readonly"
         :placeholder="placeholder"
         :value="modelValue"              
-        @input="onInput"                 
+        @input="onInput"  
+        spellcheck="false"               
     ></textarea>
 </template>
 

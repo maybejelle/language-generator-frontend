@@ -202,7 +202,7 @@ export default {
             // STORE CURRENT TEXT IN LOCAL STORAGE, UNLESS IT IS THE SAME AS THE PREVIOUS TEXT
             this.isLoading = true;
             try {
-                const response = await fetch('http://localhost:3000/api/anthropic/claude', {
+                const response = await fetch('http://localhost:3000/api/claude', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -252,7 +252,7 @@ export default {
             // STORE CURRENT TEXT IN LOCAL STORAGE, UNLESS IT IS THE SAME AS THE PREVIOUS TEXT
             this.isLoading = true;
             try {
-                const response = await fetch('http://localhost:3000/api/anthropic/claude', {
+                const response = await fetch('http://localhost:3000/api/claude', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -292,7 +292,7 @@ export default {
             const mainText = this.mainTextValue;
             this.isLoading = true;
             try {
-                const response = await fetch('http://localhost:3000/api/anthropic/claude', {
+                const response = await fetch('http://localhost:3000/api/claude', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

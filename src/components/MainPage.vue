@@ -67,6 +67,7 @@
                 </div>
             </div>
             <TextField ref="textArea" v-model="mainTextValue" :is-long-field="true"></TextField>
+            <MultipurposeButton class="feedback" v-for="(feedbackrule, index) in feedback" :key="index">{{feedbackrule}}</MultipurposeButton>
             <LoadingComponent :is-loading="isLoading"></LoadingComponent>
             <div class="details">
                 <p>word count : {{ responseWordCount }}</p>
@@ -118,6 +119,7 @@ export default {
             mainTextValue: 'The quick brown fox jumps over the lazy dog and the cat.',
             feedbackValue: 'Generating feedback...',
             evaluatedProficiencyLevel: 'NONE',
+            feedback: []
         };
     },
     methods: {
@@ -310,6 +312,13 @@ export default {
                     ? data.content[0].text
                     : 'No response text available';
 
+                
+                
+                this.feedback = this.feedbackValue.split('-');
+
+
+
+
 
                 // Use regex to find the first CEFR level in the feedbackValue
                 const match = this.feedbackValue.match(/\b(A1|A2|B1|B2|C1|C2)\b/);
@@ -401,6 +410,15 @@ select {
     justify-content: space-between;
     color: grey;
     font-size: 0.8rem;
+}
+
+.feedback {
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    width: 100%;
+    border: 1px solid black;
+    border-radius: 5px;
+    display: block;
 }
 
 .v-enter-active,

@@ -67,7 +67,8 @@
                 </div>
             </div>
             <TextField ref="textArea" v-model="mainTextValue" :is-long-field="true"></TextField>
-            <MultipurposeButton class="feedback" v-for="(feedbackrule, index) in feedback" :key="index">{{feedbackrule}}</MultipurposeButton>
+            <MultipurposeButton class="feedback" v-for="(feedbackrule, index) in feedback" :key="index">{{ feedbackrule }}
+            </MultipurposeButton>
             <LoadingComponent :is-loading="isLoading"></LoadingComponent>
             <div class="details">
                 <p>word count : {{ responseWordCount }}</p>
@@ -107,6 +108,7 @@ export default {
         return {
             isLoading: false,
             showEvaluate: false,
+            evaluatedText: "",
             showGenerate: false,
             responseWordCount: 0,
             inputTokens: 0,
@@ -123,6 +125,9 @@ export default {
         };
     },
     methods: {
+        handleValueChange() {
+            this.textChanged = true;
+        },
         changeLanguage() {
             localStorage.setItem("locale", this.currentLanguage);
             this.$i18n.locale = this.currentLanguage;
@@ -188,7 +193,10 @@ export default {
             this.showEvaluate = !this.showEvaluate;
 
             // TODO: ONLY EVALUATE THE TEXT IF IT HAS CHANGED
-            if (this.showEvaluate && true) this.evaluateText();
+            if (this.showEvaluate && this.evaluatedText !== this.mainTextValue) {
+                this.evaluateText();
+                this.evaluatedText = this.mainTextValue;
+            }
         },
         async generateNewText() {
             console.log('Generating new text');
@@ -236,7 +244,7 @@ export default {
             } catch (error) {
                 console.error('Error calling proxy server:', error);
                 this.responseText = 'Error calling API';
-            }finally {
+            } finally {
                 this.isLoading = false;
             }
         },
@@ -280,7 +288,7 @@ export default {
             } catch (error) {
                 console.error('Error calling proxy server:', error);
                 this.responseText = 'Error calling API';
-            }finally {
+            } finally {
                 this.isLoading = false;
             }
         },
@@ -313,8 +321,8 @@ export default {
                     : 'No response text available';
 
                 const splitFeedback = this.feedbackValue.split('-');
-                splitFeedback.shift(); 
-            
+                splitFeedback.shift();
+
                 this.feedback = splitFeedback;
 
 
@@ -332,7 +340,7 @@ export default {
                 console.error('Error calling proxy server:', error);
                 this.feedbackValue = 'Error calling API';
                 this.evaluatedProficiencyLevel = 'NONE';
-            }finally {
+            } finally {
                 this.isLoading = false;
             }
         },

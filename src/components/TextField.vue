@@ -43,6 +43,7 @@ export default {
     methods: {
         onInput(event) {
             this.$emit('update:modelValue', event.target.value);
+            this.$emit('value-changed', event.target.value);
         },
     },
 };

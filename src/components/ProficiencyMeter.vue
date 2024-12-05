@@ -1,6 +1,6 @@
 <template>
     <div class="image-display">
-        <img :src="imageSrc" alt="Displayed Image" v-if="imageSrc" />
+        <img :src="imageSrc" alt="Displayed" v-if="imageSrc" />
         <p v-else>Image not found</p>
     </div>
 </template>

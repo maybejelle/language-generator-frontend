@@ -16,7 +16,7 @@
     <div class="wrapper">
         <Transition>
             <div class="evaluateTab" v-if="showEvaluate">
-                <ProficiencyMeter :selectedImage="evaluatedProficiencyLevel" />
+                <BarometerComponent :proficiencyLevel="evaluatedProficiencyLevel"/>
                 <TextField readonly :title="$t('feedback')" is-long-field="true" v-model="feedbackValue" />
             </div>
         </Transition>
@@ -82,10 +82,11 @@
 
 
 <script>
+import BarometerComponent from './BarometerComponent.vue';
 import LoadingComponent from './LoadingComponent.vue';
 import MultipurposeButton from './MultipurposeButton.vue';
 import MultipurposeSlider from './MultipurposeSlider.vue';
-import ProficiencyMeter from './ProficiencyMeter.vue';
+//import ProficiencyMeter from './ProficiencyMeter.vue';
 import TextField from './TextField.vue';
 
 export default {
@@ -93,7 +94,7 @@ export default {
         TextField,
         MultipurposeButton,
         MultipurposeSlider,
-        ProficiencyMeter,
+        BarometerComponent,
         LoadingComponent
     },
     mounted() {

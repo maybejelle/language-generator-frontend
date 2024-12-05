@@ -320,10 +320,10 @@ export default {
                     ? data.content[0].text
                     : 'No response text available';
 
-                const splitFeedback = this.feedbackValue.split('-');
-                splitFeedback.shift();
-
-                this.feedback = splitFeedback;
+                
+                const splitFeedback = this.feedbackValue.split('Feedback:').splice(1);
+                const feedbackLines = splitFeedback[0].split('\n').splice(1).filter(line => line.length > 0);
+                this.feedback = feedbackLines;
 
 
 

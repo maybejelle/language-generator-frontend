@@ -7,10 +7,9 @@
             <option value="English">English</option>
             <option value="Nederlands">Nederlands</option>
         </select>
-        <select>
+        <select v-model="currentModel">
             <option value="claude">Claude</option>
-            <option value="openai">OpenAI</option>
-            <option value="gpt3">GPT-3</option>
+            <option value="chatgpt">Chatgpt (gpt-4o-mini)</option>
         </select>
     </div>
     <div class="wrapper">
@@ -85,6 +84,7 @@ import MultipurposeButton from './MultipurposeButton.vue';
 import MultipurposeSlider from './MultipurposeSlider.vue';
 import ProficiencyMeter from './ProficiencyMeter.vue';
 import TextField from './TextField.vue';
+import { fetchDataFromApi } from '@/services/apiService';
 
 export default {
     components: {
@@ -118,6 +118,7 @@ export default {
             mainTextValue: 'The quick brown fox jumps over the lazy dog and the cat.',
             feedbackValue: 'Generating feedback...',
             evaluatedProficiencyLevel: 'NONE',
+            currentModel: 'claude' // Default model
         };
     },
     methods: {
@@ -191,139 +192,83 @@ export default {
         async generateNewText() {
             console.log('Generating new text');
             const prompt = "Generate a new text, based on the following parameters. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT";
+            const url = 'http://localhost:3000/api/' + this.currentModel;
+            const body = {
+                prompt,
+                maxWordsLength: this.maxWordLengthValue,
+                proficiencyLevel: this.proficiencyLevelValue,
+                language: this.currentLanguage,
+                subject: this.subjectTextValue,
+                additionalParams: this.additionalParamsTextValue,
+            };
 
-            // Gather data to send in the request
-            const maxWordsLength = this.maxWordLengthValue;
-            const proficiencyLevel = this.proficiencyLevelValue;
-            const language = this.currentLanguage;
-            const subject = this.subjectTextValue;
-            const additionalParams = this.additionalParamsTextValue;
-
-            // STORE CURRENT TEXT IN LOCAL STORAGE, UNLESS IT IS THE SAME AS THE PREVIOUS TEXT
             this.isLoading = true;
+
             try {
-                const response = await fetch('http://localhost:3000/api/anthropic/claude', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        prompt,
-                        maxWordsLength,
-                        proficiencyLevel,
-                        language,
-                        subject,
-                        additionalParams
-                    })
-                });
-
-                const data = await response.json();
+                const data = await fetchDataFromApi(url, body);
                 this.saveToCache();
-                this.inputTokens = data.usage.input_tokens;
-                this.outputTokens = data.usage.output_tokens;
-                this.responseWordCount = data.content && data.content[0].text
-                    ? data.content[0].text.split(' ').length
-                    : 0;
-                this.mainTextValue = data.content && data.content[0].text
-                    ? data.content[0].text
-                    : 'No response text available';
-
+                this.inputTokens = data.usage?.input_tokens || 0;
+                this.outputTokens = data.usage?.output_tokens || 0;
+                this.responseWordCount = data.content?.[0]?.text?.split(' ').length || 0;
+                this.mainTextValue = data.content?.[0]?.text || 'No response text available';
                 this.showEvaluate = false;
-
-
             } catch (error) {
-                console.error('Error calling proxy server:', error);
-                this.responseText = 'Error calling API';
-            }finally {
+                this.mainTextValue = 'Error calling API';
+            } finally {
                 this.isLoading = false;
             }
+
         },
         async regenerateText() {
             console.log('Regenerating text');
             const prompt = "Tweak the main text slightly, based on the following parameters. Adjust or generate words, grammar or language wherever neccesary to match the parameters as best as possible. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT";
+            const url = 'http://localhost:3000/api/' + this.currentModel;
+            const body = {
+                prompt,
+                maxWordsLength: this.maxWordLengthValue,
+                proficiencyLevel: this.proficiencyLevelValue,
+                language: this.currentLanguage,
+                additionalParams: this.additionalParamsTextValue,
+                mainText: this.mainTextValue,
+            };
 
-            // Gather data to send in the request
-            const maxWordsLength = this.maxWordLengthValue;
-            const proficiencyLevel = this.proficiencyLevelValue;
-            const language = this.currentLanguage;
-            const additionalParams = this.additionalParamsTextValue;
-            const mainText = this.mainTextValue;
-
-            // STORE CURRENT TEXT IN LOCAL STORAGE, UNLESS IT IS THE SAME AS THE PREVIOUS TEXT
             this.isLoading = true;
+
             try {
-                const response = await fetch('http://localhost:3000/api/anthropic/claude', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        prompt,
-                        maxWordsLength,
-                        proficiencyLevel,
-                        language,
-                        additionalParams,
-                        mainText
-                    })
-                });
-
-                const data = await response.json();
+                const data = await fetchDataFromApi(url, body);
                 this.saveToCache();
-                this.mainTextValue = data.content && data.content[0].text
-                    ? data.content[0].text
-                    : 'No response text available';
-
+                this.mainTextValue = data.content?.[0]?.text || 'No response text available';
                 this.showEvaluate = false;
-
             } catch (error) {
-                console.error('Error calling proxy server:', error);
-                this.responseText = 'Error calling API';
-            }finally {
+                this.mainTextValue = 'Error calling API';
+            } finally {
                 this.isLoading = false;
             }
         },
         async evaluateText() {
             console.log('Evaluating text');
             const prompt = "Evaluate the main Text. Give suggestions on how to improve it, but keep it compact and to the point. PROVIDE A CEFR LEVEL BEFORE THE FEEDBACK, THEN ONLY OUTPUT THE FEEDBACK, NO OTHER CONTEXT";
+            const url = 'http://localhost:3000/api/' + this.currentModel;
+            const body = {
+                prompt,
+                language: this.currentLanguage,
+                additionalParams: this.additionalParamsTextValue,
+                mainText: this.mainTextValue,
+            };
 
-            // Gather data to send in the request
-            const language = this.currentLanguage;
-            const additionalParams = this.additionalParamsTextValue;
-            const mainText = this.mainTextValue;
             this.isLoading = true;
+
             try {
-                const response = await fetch('http://localhost:3000/api/anthropic/claude', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        prompt,
-                        language,
-                        additionalParams,
-                        mainText
-                    })
-                });
+                const data = await fetchDataFromApi(url, body);
+                this.feedbackValue = data.content?.[0]?.text || 'No response text available';
 
-                const data = await response.json();
-                this.feedbackValue = data.content && data.content[0].text
-                    ? data.content[0].text
-                    : 'No response text available';
-
-
-                // Use regex to find the first CEFR level in the feedbackValue
+                // Extract CEFR level
                 const match = this.feedbackValue.match(/\b(A1|A2|B1|B2|C1|C2)\b/);
-                if (match) {
-                    this.evaluatedProficiencyLevel = match[0];
-                } else {
-                    this.evaluatedProficiencyLevel = 'NONE';
-                }
-
+                this.evaluatedProficiencyLevel = match ? match[0] : 'NONE';
             } catch (error) {
-                console.error('Error calling proxy server:', error);
                 this.feedbackValue = 'Error calling API';
                 this.evaluatedProficiencyLevel = 'NONE';
-            }finally {
+            } finally {
                 this.isLoading = false;
             }
         },

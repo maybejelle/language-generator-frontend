@@ -1,30 +1,50 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import { createI18n } from 'vue-i18n';
+import { createApp } from "vue";
+import App from "./App.vue";
+import { createI18n } from "vue-i18n";
 
 const i18n = createI18n({
-    locale: 'English',
-    fallbackLocale: 'English',
+    locale: "English_British",
+    fallbackLocale: "English_British",
     messages: {
-        English: {
-            undo: 'Undo',
-            redo: 'Redo',
-            evaluate: 'Evaluate',
-            textonly: 'Text Only',
-            generate: 'Generate',
-            regenerate: 'Regenerate',
-            copy: 'Copy',
-            paste: 'Paste',
-            reset: 'Reset',
-            delete: 'Delete',
-            wordlength: 'Word Length Range',
-            proficiencylevels: 'Proficiency Levels',
-            subject: 'Subject',
-            additionalparameters: 'Additional Parameters',
+        English_British: {
+            undo: "Undo",
+            redo: "Redo",
+            evaluate: "Evaluate",
+            textonly: "Text Only",
+            generate: "Generate",
+            regenerate: "Regenerate",
+            copy: "Copy",
+            paste: "Paste",
+            reset: "Reset",
+            delete: "Delete",
+            wordlength: "Word Length Range",
+            proficiencylevels: "Proficiency Levels",
+            subject: "Subject",
+            additionalparameters: "Additional Parameters",
             additionalparametersinfo: 'e.g., "past tense, informal"',
-            sources: 'Sources',
-            sourcesinfo: 'Source list, if applicable',
-            feedback: 'Feedback'
+            sources: "Sources",
+            sourcesinfo: "Source list, if applicable",
+            feedback: "Feedback",
+        },
+        English_American: {
+            undo: "Undo",
+            redo: "Redo",
+            evaluate: "Evaluate",
+            textonly: "Text Only",
+            generate: "Generate",
+            regenerate: "Regenerate",
+            copy: "Copy",
+            paste: "Paste",
+            reset: "Reset",
+            delete: "Delete",
+            wordlength: "Word Length Range",
+            proficiencylevels: "Proficiency Levels",
+            subject: "Subject",
+            additionalparameters: "Additional Parameters",
+            additionalparametersinfo: 'e.g., "past tense, informal"',
+            sources: "Sources",
+            sourcesinfo: "Source list, if applicable",
+            feedback: "Feedback",
         },
         Nederlands: {
             undo: "Ongedaan maken",
@@ -44,7 +64,7 @@ const i18n = createI18n({
             additionalparametersinfo: "bijv. 'verleden tijd, informeel'",
             sources: "Bronnen",
             sourcesinfo: "Bronnenlijst, indien van toepassing",
-            feedback: "Feedback"
+            feedback: "Feedback",
         },
         Français: {
             undo: "Annuler",
@@ -64,13 +84,33 @@ const i18n = createI18n({
             additionalparametersinfo: "par ex., 'temps passé, informel'",
             sources: "Sources",
             sourcesinfo: "Liste des sources, si applicable",
-            feedback: "Retour"
-        }
-    }
-})
+            feedback: "Retour",
+        },
+        Español: {
+            undo: "Deshacer",
+            redo: "Rehacer",
+            evaluate: "Evaluar",
+            textonly: "Solo Texto",
+            generate: "Generar",
+            regenerate: "Regenerar",
+            copy: "Copiar",
+            paste: "Pegar",
+            reset: "Restablecer",
+            delete: "Eliminar",
+            wordlength: "Rango de Longitud de Palabras",
+            proficiencylevels: "Niveles de Competencia",
+            subject: "Asunto",
+            additionalparameters: "Parámetros Adicionales",
+            additionalparametersinfo: "por ejemplo, 'tiempo pasado, informal'",
+            sources: "Fuentes",
+            sourcesinfo: "Lista de fuentes, si aplica",
+            feedback: "Retroalimentación",
+        },
+    },
+});
 
 const app = createApp(App);
 
 app.use(i18n);
 
-app.mount('#app');
+app.mount("#app");

@@ -89,7 +89,6 @@ import BarometerComponent from './BarometerComponent.vue';
 import LoadingComponent from './LoadingComponent.vue';
 import MultipurposeButton from './MultipurposeButton.vue';
 import MultipurposeSlider from './MultipurposeSlider.vue';
-//import ProficiencyMeter from './ProficiencyMeter.vue';
 import TextField from './TextField.vue';
 import { fetchDataFromApi } from '@/services/apiService';
 
@@ -276,7 +275,7 @@ export default {
         },
         async evaluateText() {
             console.log('Evaluating text');
-            const prompt = "Evaluate the main Text. Give suggestions on how to improve it, but keep it compact and to the point. PROVIDE A CEFR LEVEL BEFORE THE FEEDBACK, THEN ONLY OUTPUT THE FEEDBACK, NO OTHER CONTEXT, THE FEEDBACK IS GIVEN with a '-' in front of it";
+        const prompt = "Evaluate the main Text. Give suggestions on how to improve it, but keep it compact and to the point. PROVIDE A CEFR LEVEL BEFORE THE FEEDBACK, THEN ONLY OUTPUT THE FEEDBACK, NO OTHER CONTEXT, EACH FEEDBACK ON A NEW LINE";
             const url = 'http://localhost:3000/api/' + this.currentModel;
             const body = {
                 prompt,
@@ -290,7 +289,7 @@ export default {
             try {
                 const data = await fetchDataFromApi(url, body);
                 this.feedbackValue = data.responseText || 'No response text available';
-                this.feedback = this.feedbackValue.split('-').splice(1);
+                this.feedback = this.feedbackValue.split('\n').splice(1).filter(feedback => feedback.length > 0);
 
                 // Extract CEFR level
                 const match = this.feedbackValue.match(/\b(A1|A2|B1|B2|C1|C2)\b/);
@@ -302,8 +301,21 @@ export default {
                 this.isLoading = false;
             }
         },
-        implementFeedback(rule) {
-            //TODO: Implement feedback rule
+        async implementFeedback(rule) {
+            const prompt = "Implement the following feedback to the mainText. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT";
+            const url = 'http://localhost:3000/api/' + this.currentModel;
+            const body = {
+                prompt,
+                mainText: this.mainTextValue,
+                feedback: rule,
+            };
+            try{
+                const data = await fetchDataFromApi(url, body);
+                console.log(data);
+                this.mainTextValue = data.responseText || 'No response text available';
+            }catch(error){
+                this.mainTextValue = 'Error calling API';
+            }
             this.feedback = this.feedback.filter(feedbackrule => feedbackrule !== rule);
 
         }

@@ -202,6 +202,8 @@ export default {
                 additionalParams: this.additionalParamsTextValue,
             };
 
+            this.isLoading = true;
+
             try {
                 const data = await fetchDataFromApi(url, body);
                 this.saveToCache();
@@ -212,11 +214,14 @@ export default {
                 this.showEvaluate = false;
             } catch (error) {
                 this.mainTextValue = 'Error calling API';
+            } finally {
+                this.isLoading = false;
             }
+
         },
         async regenerateText() {
             console.log('Regenerating text');
-            const prompt = "Tweak the main text slightly, based on the following parameters. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT";
+            const prompt = "Tweak the main text slightly, based on the following parameters. Adjust or generate words, grammar or language wherever neccesary to match the parameters as best as possible. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT";
             const url = 'http://localhost:3000/api/' + this.currentModel;
             const body = {
                 prompt,
@@ -227,6 +232,8 @@ export default {
                 mainText: this.mainTextValue,
             };
 
+            this.isLoading = true;
+
             try {
                 const data = await fetchDataFromApi(url, body);
                 this.saveToCache();
@@ -234,11 +241,13 @@ export default {
                 this.showEvaluate = false;
             } catch (error) {
                 this.mainTextValue = 'Error calling API';
+            } finally {
+                this.isLoading = false;
             }
         },
         async evaluateText() {
             console.log('Evaluating text');
-            const prompt = "Evaluate the main Text. PROVIDE A CEFR LEVEL BEFORE THE FEEDBACK, THEN ONLY OUTPUT THE FEEDBACK, NO OTHER CONTEXT";
+            const prompt = "Evaluate the main Text. Give suggestions on how to improve it, but keep it compact and to the point. PROVIDE A CEFR LEVEL BEFORE THE FEEDBACK, THEN ONLY OUTPUT THE FEEDBACK, NO OTHER CONTEXT";
             const url = 'http://localhost:3000/api/' + this.currentModel;
             const body = {
                 prompt,
@@ -246,6 +255,8 @@ export default {
                 additionalParams: this.additionalParamsTextValue,
                 mainText: this.mainTextValue,
             };
+
+            this.isLoading = true;
 
             try {
                 const data = await fetchDataFromApi(url, body);
@@ -257,7 +268,7 @@ export default {
             } catch (error) {
                 this.feedbackValue = 'Error calling API';
                 this.evaluatedProficiencyLevel = 'NONE';
-            }finally {
+            } finally {
                 this.isLoading = false;
             }
         },

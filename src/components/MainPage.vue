@@ -17,7 +17,7 @@
     <div class="wrapper">
         <Transition>
             <div class="evaluateTab" v-if="showEvaluate">
-                <BarometerComponent :proficiencyLevel="evaluatedProficiencyLevel"/>
+                <BarometerComponent :proficiencyLevel="evaluatedProficiencyLevel" />
                 <TextField readonly :title="$t('feedback')" is-long-field="true" v-model="feedbackValue" />
             </div>
         </Transition>
@@ -68,14 +68,15 @@
                 </div>
             </div>
             <TextField ref="textArea" v-model="mainTextValue" :is-long-field="true"></TextField>
-            <h2 v-if="feedback.length > 0">{{$t('implementFeedback')}}</h2>
-            <MultipurposeButton class="feedback" @click="implementFeedback(feedbackrule)" v-for="(feedbackrule, index) in feedback" :key="index">{{ feedbackrule }}
-            </MultipurposeButton>
-            <LoadingComponent :is-loading="isLoading"></LoadingComponent>
             <div class="details">
                 <p>word count : {{ responseWordCount }}</p>
                 <p>Tokens : {{ inputTokens }} / {{ outputTokens }}</p>
             </div>
+            <h2 v-if="feedback.length > 0">{{$t('implementFeedback')}}</h2>
+            <MultipurposeButton class="feedback" @click="implementFeedback(feedbackrule)"
+                v-for="(feedbackrule, index) in feedback" :key="index">{{ feedbackrule }}
+            </MultipurposeButton>
+            <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         </div>
     </div>
 
@@ -275,7 +276,7 @@ export default {
         },
         async evaluateText() {
             console.log('Evaluating text');
-            const prompt = "Evaluate the main Text. Give suggestions on how to improve it, but keep it compact and to the point. PROVIDE A CEFR LEVEL BEFORE THE FEEDBACK, THEN ONLY OUTPUT THE FEEDBACK, NO OTHER CONTEXT";
+            const prompt = "Evaluate the main Text. Give suggestions on how to improve it, but keep it compact and to the point. PROVIDE A CEFR LEVEL BEFORE THE FEEDBACK, THEN ONLY OUTPUT THE FEEDBACK, NO OTHER CONTEXT, THE FEEDBACK IS GIVEN with a '-' in front of it";
             const url = 'http://localhost:3000/api/' + this.currentModel;
             const body = {
                 prompt,
@@ -289,6 +290,7 @@ export default {
             try {
                 const data = await fetchDataFromApi(url, body);
                 this.feedbackValue = data.responseText || 'No response text available';
+                this.feedback = this.feedbackValue.split('-').splice(1);
 
                 // Extract CEFR level
                 const match = this.feedbackValue.match(/\b(A1|A2|B1|B2|C1|C2)\b/);

@@ -25,6 +25,7 @@ const i18n = createI18n({
             sources: "Sources",
             sourcesinfo: "Source list, if applicable",
             feedback: "Feedback",
+            implementFeedback: "Implement Feedback",
         },
         English_American: {
             undo: "Undo",
@@ -45,6 +46,7 @@ const i18n = createI18n({
             sources: "Sources",
             sourcesinfo: "Source list, if applicable",
             feedback: "Feedback",
+            implementFeedback: "Implement Feedback",
         },
         Nederlands: {
             undo: "Ongedaan maken",
@@ -65,6 +67,7 @@ const i18n = createI18n({
             sources: "Bronnen",
             sourcesinfo: "Bronnenlijst, indien van toepassing",
             feedback: "Feedback",
+            implementFeedback: "Feedback Implementeren",
         },
         Français: {
             undo: "Annuler",
@@ -85,6 +88,7 @@ const i18n = createI18n({
             sources: "Sources",
             sourcesinfo: "Liste des sources, si applicable",
             feedback: "Retour",
+            implementFeedback: "Implémenter le Retour",
         },
         Español: {
             undo: "Deshacer",
@@ -105,6 +109,7 @@ const i18n = createI18n({
             sources: "Fuentes",
             sourcesinfo: "Lista de fuentes, si aplica",
             feedback: "Retroalimentación",
+            implementFeedback: "Implementar Retroalimentación",
         },
     },
 });

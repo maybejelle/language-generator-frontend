@@ -17,13 +17,13 @@
     <div class="wrapper">
         <Transition>
             <div class="evaluateTab" v-if="showEvaluate">
-                <ProficiencyMeter :selectedImage="evaluatedProficiencyLevel" />
+                <BarometerComponent :proficiencyLevel="evaluatedProficiencyLevel" />
                 <TextField readonly :title="$t('feedback')" is-long-field="true" v-model="feedbackValue" />
             </div>
         </Transition>
         <Transition>
             <div class="generateTab" v-if="showGenerate">
-                <div>
+                <div class="generateButtons">
                     <MultipurposeButton button-type="left" @click="generateNewText">{{ $t('generate') }}
                     </MultipurposeButton>
                     <MultipurposeButton button-type="right" @click="regenerateText">{{ $t('regenerate') }}
@@ -68,11 +68,15 @@
                 </div>
             </div>
             <TextField ref="textArea" v-model="mainTextValue" :is-long-field="true"></TextField>
-            <LoadingComponent :is-loading="isLoading"></LoadingComponent>
             <div class="details">
                 <p>word count : {{ responseWordCount }}</p>
                 <p>Tokens : {{ inputTokens }} / {{ outputTokens }}</p>
             </div>
+            <h2 v-if="feedback.length > 0">{{$t('implementFeedback')}}</h2>
+            <MultipurposeButton class="feedback" @click="implementFeedback(feedbackrule)"
+                v-for="(feedbackrule, index) in feedback" :key="index">{{ feedbackrule }}
+            </MultipurposeButton>
+            <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         </div>
     </div>
 
@@ -81,10 +85,10 @@
 
 
 <script>
+import BarometerComponent from './BarometerComponent.vue';
 import LoadingComponent from './LoadingComponent.vue';
 import MultipurposeButton from './MultipurposeButton.vue';
 import MultipurposeSlider from './MultipurposeSlider.vue';
-import ProficiencyMeter from './ProficiencyMeter.vue';
 import TextField from './TextField.vue';
 import { fetchDataFromApi } from '@/services/apiService';
 
@@ -93,7 +97,7 @@ export default {
         TextField,
         MultipurposeButton,
         MultipurposeSlider,
-        ProficiencyMeter,
+        BarometerComponent,
         LoadingComponent
     },
     mounted() {
@@ -115,6 +119,7 @@ export default {
         return {
             isLoading: false,
             showEvaluate: false,
+            evaluatedText: "",
             showGenerate: false,
             responseWordCount: 0,
             inputTokens: 0,
@@ -129,10 +134,14 @@ export default {
             mainTextValue: 'The quick brown fox jumps over the lazy dog and the cat.',
             feedbackValue: 'Generating feedback...',
             evaluatedProficiencyLevel: 'NONE',
+            feedback: [],
             currentModel: 'claude' // Default model
         };
     },
     methods: {
+        handleValueChange() {
+            this.textChanged = true;
+        },
         changeLanguage() {
             if (this.languageOptions.includes(this.currentLanguage)) {
                 localStorage.setItem("locale", this.currentLanguage);
@@ -201,8 +210,10 @@ export default {
             console.log('Show evaluate tab');
             this.showEvaluate = !this.showEvaluate;
 
-            // TODO: ONLY EVALUATE THE TEXT IF IT HAS CHANGED
-            if (this.showEvaluate && true) this.evaluateText();
+            if (this.showEvaluate && this.evaluatedText !== this.mainTextValue) {
+                this.evaluateText();
+                this.evaluatedText = this.mainTextValue;
+            }
         },
         async generateNewText() {
             console.log('Generating new text');
@@ -264,7 +275,7 @@ export default {
         },
         async evaluateText() {
             console.log('Evaluating text');
-            const prompt = "Evaluate the main Text. Give suggestions on how to improve it, but keep it compact and to the point. PROVIDE A CEFR LEVEL BEFORE THE FEEDBACK, THEN ONLY OUTPUT THE FEEDBACK, NO OTHER CONTEXT";
+        const prompt = "Evaluate the main Text. Give suggestions on how to improve it, but keep it compact and to the point. PROVIDE A CEFR LEVEL BEFORE THE FEEDBACK, THEN ONLY OUTPUT THE FEEDBACK, NO OTHER CONTEXT, EACH FEEDBACK ON A NEW LINE";
             const url = 'http://localhost:3000/api/' + this.currentModel;
             const body = {
                 prompt,
@@ -278,6 +289,7 @@ export default {
             try {
                 const data = await fetchDataFromApi(url, body);
                 this.feedbackValue = data.responseText || 'No response text available';
+                this.feedback = this.feedbackValue.split('\n').splice(1).filter(feedback => feedback.length > 0);
 
                 // Extract CEFR level
                 const match = this.feedbackValue.match(/\b(A1|A2|B1|B2|C1|C2)\b/);
@@ -289,6 +301,24 @@ export default {
                 this.isLoading = false;
             }
         },
+        async implementFeedback(rule) {
+            const prompt = "Implement the following feedback to the mainText. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT";
+            const url = 'http://localhost:3000/api/' + this.currentModel;
+            const body = {
+                prompt,
+                mainText: this.mainTextValue,
+                feedback: rule,
+            };
+            try{
+                const data = await fetchDataFromApi(url, body);
+                console.log(data);
+                this.mainTextValue = data.responseText || 'No response text available';
+            }catch(error){
+                this.mainTextValue = 'Error calling API';
+            }
+            this.feedback = this.feedback.filter(feedbackrule => feedbackrule !== rule);
+
+        }
     }
 
 }
@@ -342,6 +372,11 @@ img {
     padding: 1rem;
 }
 
+.generateButtons {
+    display: flex;
+    justify-content: center;
+}
+
 .textEditorField {
     width: 100%;
     padding: 1rem;
@@ -363,6 +398,15 @@ select {
     justify-content: space-between;
     color: grey;
     font-size: 0.8rem;
+}
+
+.feedback {
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    width: 100%;
+    border: 1px solid black;
+    border-radius: 5px;
+    display: block;
 }
 
 .v-enter-active,

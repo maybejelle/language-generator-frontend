@@ -53,7 +53,7 @@ export default {
   },
   data() {
     return {
-      currentIndex: this.value, // Sync `currentIndex` with `value`
+      currentIndex: this.min, // Sync `currentIndex` with `value`
     };
   },
   watch: {

@@ -22,7 +22,7 @@
         </Transition>
         <Transition>
             <div class="generateTab" v-if="showGenerate">
-                <div>
+                <div class="generateButtons">
                     <MultipurposeButton button-type="left" @click="generateNewText">{{ $t('generate') }}
                     </MultipurposeButton>
                     <MultipurposeButton button-type="right" @click="regenerateText">{{ $t('regenerate') }}
@@ -193,7 +193,6 @@ export default {
             console.log('Show evaluate tab');
             this.showEvaluate = !this.showEvaluate;
 
-            // TODO: ONLY EVALUATE THE TEXT IF IT HAS CHANGED
             if (this.showEvaluate && this.evaluatedText !== this.mainTextValue) {
                 this.evaluateText();
                 this.evaluatedText = this.mainTextValue;
@@ -396,6 +395,11 @@ img {
     border-right: solid 1px black;
     width: 30rem;
     padding: 1rem;
+}
+
+.generateButtons {
+    display: flex;
+    justify-content: center;
 }
 
 .textEditorField {

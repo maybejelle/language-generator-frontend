@@ -24,7 +24,8 @@ const i18n = createI18n({
             additionalparametersinfo: 'e.g., "past tense, informal"',
             sources: 'Sources',
             sourcesinfo: 'Source list, if applicable',
-            feedback: 'Feedback'
+            feedback: 'Feedback',
+            implementFeedback: 'Implement Feedback'
         },
         Nederlands: {
             undo: "Ongedaan maken",
@@ -44,7 +45,8 @@ const i18n = createI18n({
             additionalparametersinfo: "bijv. 'verleden tijd, informeel'",
             sources: "Bronnen",
             sourcesinfo: "Bronnenlijst, indien van toepassing",
-            feedback: "Feedback"
+            feedback: "Feedback",
+            implementFeedback: "Feedback Implementeren"
         },
         Français: {
             undo: "Annuler",
@@ -64,7 +66,8 @@ const i18n = createI18n({
             additionalparametersinfo: "par ex., 'temps passé, informel'",
             sources: "Sources",
             sourcesinfo: "Liste des sources, si applicable",
-            feedback: "Retour"
+            feedback: "Retour",
+            implementFeedback: "Implémenter le Retour"
         }
     }
 })

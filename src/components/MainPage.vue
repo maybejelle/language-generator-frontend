@@ -67,7 +67,8 @@
                 </div>
             </div>
             <TextField ref="textArea" v-model="mainTextValue" :is-long-field="true"></TextField>
-            <MultipurposeButton class="feedback" v-for="(feedbackrule, index) in feedback" :key="index">{{ feedbackrule }}
+            <h2 v-if="feedback.length > 0">{{$t('implementFeedback')}}</h2>
+            <MultipurposeButton class="feedback" @click="implementFeedback(feedbackrule)" v-for="(feedbackrule, index) in feedback" :key="index">{{ feedbackrule }}
             </MultipurposeButton>
             <LoadingComponent :is-loading="isLoading"></LoadingComponent>
             <div class="details">
@@ -344,6 +345,11 @@ export default {
                 this.isLoading = false;
             }
         },
+        implementFeedback(rule) {
+            //TODO: Implement feedback rule
+            this.feedback = this.feedback.filter(feedbackrule => feedbackrule !== rule);
+
+        }
     }
 
 }

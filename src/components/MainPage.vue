@@ -66,6 +66,7 @@
                 </div>
             </div>
             <TextField ref="textArea" v-model="mainTextValue" :is-long-field="true"></TextField>
+            <LoadingComponent :is-loading="isLoading"></LoadingComponent>
             <div class="details">
                 <p>word count : {{ responseWordCount }}</p>
                 <p>Tokens : {{ inputTokens }} / {{ outputTokens }}</p>
@@ -78,6 +79,7 @@
 
 
 <script>
+import LoadingComponent from './LoadingComponent.vue';
 import MultipurposeButton from './MultipurposeButton.vue';
 import MultipurposeSlider from './MultipurposeSlider.vue';
 import ProficiencyMeter from './ProficiencyMeter.vue';
@@ -89,7 +91,8 @@ export default {
         TextField,
         MultipurposeButton,
         MultipurposeSlider,
-        ProficiencyMeter
+        ProficiencyMeter,
+        LoadingComponent
     },
     mounted() {
         if (localStorage.getItem("locale")) {
@@ -101,6 +104,7 @@ export default {
     },
     data() {
         return {
+            isLoading: false,
             showEvaluate: false,
             showGenerate: false,
             responseWordCount: 0,
@@ -253,6 +257,8 @@ export default {
             } catch (error) {
                 this.feedbackValue = 'Error calling API';
                 this.evaluatedProficiencyLevel = 'NONE';
+            }finally {
+                this.isLoading = false;
             }
         },
     }
@@ -265,7 +271,6 @@ export default {
 <style scoped>
 .header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     padding: 1rem;
     border-bottom: 1px solid black;
@@ -273,6 +278,7 @@ export default {
 
 .header select {
     width: 20rem;
+    margin: 0 1rem;
 }
 
 h1 {

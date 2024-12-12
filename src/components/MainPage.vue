@@ -217,7 +217,7 @@ export default {
         },
         async generateNewText() {
             console.log('Generating new text');
-            const prompt = "Generate a new text, based on the following parameters. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT";
+            const prompt = "Generate a new text, based on the following parameters. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT. THE ENTIRE RESPONSE MUST BE IN THE LANGUAGE PROVIDED.";
             const url = 'http://localhost:3000/api/' + this.currentModel;
             const body = {
                 prompt,
@@ -247,7 +247,7 @@ export default {
         },
         async regenerateText() {
             console.log('Regenerating text');
-            const prompt = "Tweak the main text slightly, based on the following parameters. Adjust or generate words, grammar or language wherever neccesary to match the parameters as best as possible. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT";
+            const prompt = "Tweak the main text slightly, based on the following parameters. Adjust or generate words, grammar or language wherever neccesary to match the parameters as best as possible. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT. THE ENTIRE RESPONSE MUST BE IN THE LANGUAGE PROVIDED.";
             const url = 'http://localhost:3000/api/' + this.currentModel;
             const body = {
                 prompt,
@@ -275,7 +275,7 @@ export default {
         },
         async evaluateText() {
             console.log('Evaluating text');
-        const prompt = "Evaluate the main Text. Give suggestions on how to improve it, but keep it compact and to the point. PROVIDE A CEFR LEVEL BEFORE THE FEEDBACK, THEN ONLY OUTPUT THE FEEDBACK, NO OTHER CONTEXT, EACH FEEDBACK ON A NEW LINE";
+        const prompt = "Evaluate the main Text. Give suggestions on how to improve it, but keep it compact and to the point. PROVIDE A CEFR LEVEL BEFORE THE FEEDBACK, THEN ONLY OUTPUT THE FEEDBACK, NO OTHER CONTEXT, EACH FEEDBACK ON A NEW LINE. THE ENTIRE RESPONSE MUST BE IN THE LANGUAGE PROVIDED.";
             const url = 'http://localhost:3000/api/' + this.currentModel;
             const body = {
                 prompt,

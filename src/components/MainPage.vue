@@ -217,7 +217,7 @@ export default {
         },
         async generateNewText() {
             console.log('Generating new text');
-            const prompt = "Generate a new text, based on the following parameters. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT. THE ENTIRE RESPONSE MUST BE IN THE LANGUAGE PROVIDED.";
+            const prompt = "Generate a new text, based on the following parameters. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT. THE ENTIRE RESPONSE MUST BE IN THE LANGUAGE PROVIDED. IF POSSIBLE YOU SHOULD FORMAT THE TEXT WITH TITLES, PARAHRAPHS, ETC.";
             const url = 'http://localhost:3000/api/' + this.currentModel;
             const body = {
                 prompt,
@@ -248,7 +248,7 @@ export default {
         },
         async regenerateText() {
             console.log('Regenerating text');
-            const prompt = "Tweak the main text slightly, based on the following parameters. Adjust or generate words, grammar or language wherever neccesary to match the parameters as best as possible. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT. THE ENTIRE RESPONSE MUST BE IN THE LANGUAGE PROVIDED.";
+            const prompt = "Tweak the main text slightly, based on the following parameters. Adjust or generate words, grammar or language wherever neccesary to match the parameters as best as possible. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT. THE ENTIRE RESPONSE MUST BE IN THE LANGUAGE PROVIDED. IF POSSIBLE YOU SHOULD FORMAT THE TEXT WITH TITLES, PARAHRAPHS, ETC.";
             const url = 'http://localhost:3000/api/' + this.currentModel;
             const body = {
                 prompt,

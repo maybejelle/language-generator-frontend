@@ -4,8 +4,10 @@
         <h1>Language Level Generator</h1>
         <select v-model="currentLanguage" @change="changeLanguage">
             <option value="Français">Français</option>
-            <option value="English">English</option>
+            <option value="English_British">English (UK)</option>
+            <option value="English_American">English (US)</option>
             <option value="Nederlands">Nederlands</option>
+            <option value="Español">Español</option>
         </select>
         <select v-model="currentModel">
             <option value="claude">Claude</option>
@@ -100,10 +102,17 @@ export default {
     },
     mounted() {
         if (localStorage.getItem("locale")) {
-            this.$i18n.locale = localStorage.getItem("locale");
-            this.currentLanguage = this.$i18n.locale;
+            const storedLocale = localStorage.getItem("locale");
+            if (this.languageOptions.includes(storedLocale)) {
+                this.$i18n.locale = storedLocale;
+                this.currentLanguage = storedLocale;
+            } else {
+                localStorage.setItem("locale", this.defaultLanguage);
+                this.$i18n.locale = this.defaultLanguage;
+                this.currentLanguage = this.defaultLanguage;
+            }
         } else {
-            localStorage.setItem("locale", this.currentLanguage);
+            localStorage.setItem("locale", this.defaultLanguage);
         }
     },
     data() {
@@ -116,6 +125,8 @@ export default {
             inputTokens: 0,
             outputTokens: 0,
             currentLanguage: this.$i18n.locale,
+            defaultLanguage: 'English_British',
+            languageOptions: ['Français', 'English_British', 'English_American', 'Nederlands', 'Español'],
             maxWordLengthValue: 100,
             proficiencyLevelValue: 'A1',
             subjectTextValue: 'Random subject',
@@ -132,8 +143,12 @@ export default {
             this.textChanged = true;
         },
         changeLanguage() {
-            localStorage.setItem("locale", this.currentLanguage);
-            this.$i18n.locale = this.currentLanguage;
+            if (this.languageOptions.includes(this.currentLanguage)) {
+                localStorage.setItem("locale", this.currentLanguage);
+                this.$i18n.locale = this.currentLanguage;
+            } else {
+                console.error("Selected language is not supported.");
+            }
         },
         saveToCache() {
             let undoHistory = JSON.parse(localStorage.getItem('undo-history')) || [];
@@ -218,10 +233,10 @@ export default {
             try {
                 const data = await fetchDataFromApi(url, body);
                 this.saveToCache();
-                this.inputTokens = data.usage?.input_tokens || 0;
-                this.outputTokens = data.usage?.output_tokens || 0;
-                this.responseWordCount = data.content?.[0]?.text?.split(' ').length || 0;
-                this.mainTextValue = data.content?.[0]?.text || 'No response text available';
+                this.inputTokens = data.inputTokens || 0;
+                this.outputTokens = data.outputTokens || 0;
+                this.responseWordCount = data.responseText.split(' ').length || 0;
+                this.mainTextValue = data.responseText || 'No response text available';
                 this.showEvaluate = false;
             } catch (error) {
                 this.mainTextValue = 'Error calling API';
@@ -248,7 +263,9 @@ export default {
             try {
                 const data = await fetchDataFromApi(url, body);
                 this.saveToCache();
-                this.mainTextValue = data.content?.[0]?.text || 'No response text available';
+                this.inputTokens = data.inputTokens || 0;
+                this.outputTokens = data.outputTokens || 0;
+                this.mainTextValue = data.responseText || 'No response text available';
                 this.showEvaluate = false;
             } catch (error) {
                 this.mainTextValue = 'Error calling API';
@@ -271,7 +288,7 @@ export default {
 
             try {
                 const data = await fetchDataFromApi(url, body);
-                this.feedbackValue = data.content?.[0]?.text || 'No response text available';
+                this.feedbackValue = data.responseText || 'No response text available';
 
                 // Extract CEFR level
                 const match = this.feedbackValue.match(/\b(A1|A2|B1|B2|C1|C2)\b/);

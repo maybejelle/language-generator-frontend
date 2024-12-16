@@ -20,9 +20,9 @@
         <Transition>
             <div class="generateTab" v-if="showGenerate">
                 <div class="generateButtons">
-                    <MultipurposeButton button-type="left" @click="generateNewText">{{ $t('generate') }}
+                    <MultipurposeButton button-type="left" @click="generateText">{{ $t('generate') }}
                     </MultipurposeButton>
-                    <MultipurposeButton button-type="right" @click="regenerateText">{{ $t('regenerate') }}
+                    <MultipurposeButton button-type="right" @click="generateText('regenText')">{{ $t('regenerate') }}
                     </MultipurposeButton>
                 </div>
 
@@ -86,7 +86,7 @@ import LoadingComponent from './LoadingComponent.vue';
 import MultipurposeButton from './MultipurposeButton.vue';
 import MultipurposeSlider from './MultipurposeSlider.vue';
 import TextField from './TextField.vue';
-import { fetchDataFromApi } from '@/services/apiService';
+import { fetchDataFromApi, PROMPTS } from '@/services/apiService';
 
 export default {
     components: {
@@ -213,57 +213,31 @@ export default {
             this.showEvaluate = false;
             this.showGenerate = false;
         },
-        async generateNewText() {
-            console.log('Generating new text');
-            const prompt = "Generate a new text, based on the following parameters. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT. THE ENTIRE RESPONSE MUST BE IN THE LANGUAGE PROVIDED. IF POSSIBLE YOU SHOULD FORMAT THE TEXT WITH TITLES, PARAHRAPHS, ETC.";
-            const url = 'http://localhost:3000/api/' + this.currentModel;
+        async generateText(type = "new"){
             const body = {
-                prompt,
+                prompt: "",
                 maxWordsLength: this.maxWordLengthValue,
                 proficiencyLevel: this.proficiencyLevelValue,
                 language: this.currentLanguage,
                 subject: this.subjectTextValue,
                 additionalParams: this.additionalParamsTextValue,
-            };
-
-            this.isLoading = true;
-
+                mainText: "",
+            }
+            if(type === "new"){
+                body.prompt = PROMPTS.generate;
+            }else{
+                body.prompt = PROMPTS.regenerate;
+                body.mainText = this.mainTextValue;
+                body.subject= "same subject as text";
+            }
+            const url = 'http://localhost:3000/api/' + this.currentModel;
             try {
+                this.isLoading = true;
                 const data = await fetchDataFromApi(url, body);
                 this.saveToCache();
                 this.inputTokens = data.inputTokens || 0;
                 this.outputTokens = data.outputTokens || 0;
                 this.responseWordCount = data.responseText.split(' ').length || 0;
-                this.mainTextValue = data.responseText || 'No response text available';
-                this.showEvaluate = false;
-                this.feedback = [];
-            } catch (error) {
-                this.mainTextValue = 'Error calling API';
-            } finally {
-                this.isLoading = false;
-            }
-
-        },
-        async regenerateText() {
-            console.log('Regenerating text');
-            const prompt = "Tweak the main text slightly, based on the following parameters. Adjust or generate words, grammar or language wherever neccesary to match the parameters as best as possible. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT. THE ENTIRE RESPONSE MUST BE IN THE LANGUAGE PROVIDED. IF POSSIBLE YOU SHOULD FORMAT THE TEXT WITH TITLES, PARAHRAPHS, ETC.";
-            const url = 'http://localhost:3000/api/' + this.currentModel;
-            const body = {
-                prompt,
-                maxWordsLength: this.maxWordLengthValue,
-                proficiencyLevel: this.proficiencyLevelValue,
-                language: this.currentLanguage,
-                additionalParams: this.additionalParamsTextValue,
-                mainText: this.mainTextValue,
-            };
-
-            this.isLoading = true;
-
-            try {
-                const data = await fetchDataFromApi(url, body);
-                this.saveToCache();
-                this.inputTokens = data.inputTokens || 0;
-                this.outputTokens = data.outputTokens || 0;
                 this.mainTextValue = data.responseText || 'No response text available';
                 this.showEvaluate = false;
                 this.feedback = [];

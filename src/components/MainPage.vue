@@ -20,9 +20,11 @@
         <Transition>
             <div class="generateTab" v-if="showGenerate">
                 <div class="generateButtons">
-                    <MultipurposeButton button-type="left" :value="'generate'" @click="generateText">{{ $t('generate') }}
+                    <MultipurposeButton button-type="left" :value="'generate'" @click="generateText">{{ $t('generate')
+                        }}
                     </MultipurposeButton>
-                    <MultipurposeButton button-type="right" :value="'regenerate'" @click="generateText('regenText')">{{ $t('regenerate') }}
+                    <MultipurposeButton button-type="right" :value="'regenerate'" @click="generateText('regenText')">{{
+                        $t('regenerate') }}
                     </MultipurposeButton>
                 </div>
 
@@ -43,24 +45,26 @@
         <div class="textEditorField">
             <div class="mainActionButtons">
                 <div>
-                    <MultipurposeButton button-type="left" :value="'undo'" :onclick="undoChanges">{{ $t('undo') }}</MultipurposeButton>
-                    <MultipurposeButton button-type="right" :value="'redo'"  :onclick="redoChanges">{{ $t('redo') }}</MultipurposeButton>
+                    <MultipurposeButton button-type="left" :value="'undo'" @click="undoChanges">{{ $t('undo') }}
+                    </MultipurposeButton>
+                    <MultipurposeButton button-type="right" :value="'redo'" @click="redoChanges">{{ $t('redo') }}
+                    </MultipurposeButton>
                 </div>
                 <div class="coreActionButtons">
-                    <MultipurposeButton button-type="left" :value="'evaluate'" :toggleable="true" :isActiveProp="showEvaluate"
-                        @click="toggleTab('evaluate')">{{ $t('evaluate') }}
+                    <MultipurposeButton button-type="left" :value="'evaluate'" :toggleable="true"
+                        :isActiveProp="showEvaluate" @click="toggleTab('evaluate')">{{ $t('evaluate') }}
                     </MultipurposeButton>
                     <MultipurposeButton button-type="middle" :toggleable="false" @click="toggleTab('text only')">{{
                         $t('textonly') }}
                     </MultipurposeButton>
-                    <MultipurposeButton button-type="right" :value="'generateTab'" :toggleable="true" :isActiveProp="showGenerate"
-                        @click="toggleTab('generate')">{{ $t('generate') }}
+                    <MultipurposeButton button-type="right" :value="'generateTab'" :toggleable="true"
+                        :isActiveProp="showGenerate" @click="toggleTab('generate')">{{ $t('generate') }}
                     </MultipurposeButton>
 
                 </div>
                 <div>
-                    <MultipurposeButton button-type="left" :onclick="copyText">{{ $t('copy') }}</MultipurposeButton>
-                    <MultipurposeButton button-type="right" :onclick="pasteText">{{ $t('paste') }}</MultipurposeButton>
+                    <MultipurposeButton button-type="left" @click="copyText">{{ $t('copy') }}</MultipurposeButton>
+                    <MultipurposeButton button-type="right" @click="pasteText">{{ $t('paste') }}</MultipurposeButton>
                 </div>
             </div>
             <TextField ref="textArea" v-model="mainTextValue" :is-long-field="true"></TextField>
@@ -69,8 +73,8 @@
                 <p>Tokens : {{ inputTokens }} / {{ outputTokens }}</p>
             </div>
             <h2 v-if="feedback.length > 0">{{ $t('implementFeedback') }}</h2>
-            <MultipurposeButton @click="implementFeedback(feedbackrule)"
-                v-for="(feedbackrule, index) in feedback" :key="index">{{ feedbackrule }}
+            <MultipurposeButton @click="implementFeedback(feedbackrule)" v-for="(feedbackrule, index) in feedback"
+                :key="index">{{ feedbackrule }}
             </MultipurposeButton>
             <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         </div>

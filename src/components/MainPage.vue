@@ -95,18 +95,13 @@ export default {
         LoadingComponent
     },
     mounted() {
-        if (localStorage.getItem("locale")) {
-            const storedLocale = localStorage.getItem("locale");
-            if (this.languageOptions.includes(storedLocale)) {
-                this.$i18n.locale = storedLocale;
-                this.currentLanguage = storedLocale;
-            } else {
-                localStorage.setItem("locale", this.defaultLanguage);
-                this.$i18n.locale = this.defaultLanguage;
-                this.currentLanguage = this.defaultLanguage;
-            }
+        const locale = localStorage.getItem("locale");
+        if (locale && this.languageOptions.includes(locale)) {
+            this.currentLanguage = locale;
+            this.$i18n.locale = locale;
         } else {
-            localStorage.setItem("locale", this.defaultLanguage);
+            this.currentLanguage = this.defaultLanguage;
+            this.$i18n.locale = this.defaultLanguage;
         }
     },
     data() {
@@ -133,9 +128,6 @@ export default {
         };
     },
     methods: {
-        handleValueChange() {
-            this.textChanged = true;
-        },
         changeLanguage() {
             if (this.languageOptions.includes(this.currentLanguage)) {
                 localStorage.setItem("locale", this.currentLanguage);
@@ -165,7 +157,6 @@ export default {
                 localStorage.setItem('undo-history', JSON.stringify(undoHistory));
                 localStorage.setItem('redo-history', JSON.stringify(redoHistory));
             }
-
             this.responseWordCount = this.mainTextValue.split(' ').length;
         },
         redoChanges() {
@@ -241,6 +232,7 @@ export default {
             }
         },
         async evaluateText() {
+            if (this.mainTextValue === this.evaluatedText) return;
             const prompt = PROMPTS.evaluate;
             const body = {
                 prompt,
@@ -253,6 +245,7 @@ export default {
 
             try {
                 const data = await fetchDataFromApi(this.currentModel, body);
+                this.evaluatedText = this.mainTextValue;
                 this.feedbackValue = data.responseText || 'No response text available';
                 this.feedback = this.feedbackValue.split('\n').splice(1).filter(feedback => feedback.length > 0);
 

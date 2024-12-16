@@ -304,12 +304,13 @@ export default {
             }
         },
         async implementFeedback(rule) {
-            const prompt = "Implement the following feedback to the mainText. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT";
+            const prompt = "Implement the following feedback to the mainText. ONLY OUTPUT THE TEXT IN THE GIVEN LANGUAGE, NO OTHER CONTEXT";
             const url = 'http://localhost:3000/api/' + this.currentModel;
             const body = {
                 prompt,
                 mainText: this.mainTextValue,
                 feedback: rule,
+                language: this.currentLanguage,
             };
             try{
                 this.isLoading = true;

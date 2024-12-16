@@ -3,11 +3,7 @@
     <div class="header">
         <h1>Language Level Generator</h1>
         <select v-model="currentLanguage" @change="changeLanguage">
-            <option value="Français">Français</option>
-            <option value="English_British">English (UK)</option>
-            <option value="English_American">English (US)</option>
-            <option value="Nederlands">Nederlands</option>
-            <option value="Español">Español</option>
+            <option v-for="language in languageOptions" :key="language" :value="language">{{ language }}</option>
         </select>
         <select v-model="currentModel">
             <option value="claude">Claude</option>
@@ -24,9 +20,11 @@
         <Transition>
             <div class="generateTab" v-if="showGenerate">
                 <div class="generateButtons">
-                    <MultipurposeButton button-type="left" @click="generateNewText">{{ $t('generate') }}
+                    <MultipurposeButton button-type="left" :value="'generate'" @click="generateText">{{ $t('generate')
+                        }}
                     </MultipurposeButton>
-                    <MultipurposeButton button-type="right" @click="regenerateText">{{ $t('regenerate') }}
+                    <MultipurposeButton button-type="right" :value="'regenerate'" @click="generateText('regenText')">{{
+                        $t('regenerate') }}
                     </MultipurposeButton>
                 </div>
 
@@ -47,24 +45,26 @@
         <div class="textEditorField">
             <div class="mainActionButtons">
                 <div>
-                    <MultipurposeButton button-type="left" :onclick="undoChanges">{{ $t('undo') }}</MultipurposeButton>
-                    <MultipurposeButton button-type="right" :onclick="redoChanges">{{ $t('redo') }}</MultipurposeButton>
+                    <MultipurposeButton button-type="left" :value="'undo'" @click="undoChanges">{{ $t('undo') }}
+                    </MultipurposeButton>
+                    <MultipurposeButton button-type="right" :value="'redo'" @click="redoChanges">{{ $t('redo') }}
+                    </MultipurposeButton>
                 </div>
                 <div class="coreActionButtons">
-                    <MultipurposeButton button-type="left" :toggleable="true" :isActiveProp="showEvaluate"
-                        @click="showEvaluateTab">{{ $t('evaluate') }}
+                    <MultipurposeButton button-type="left" :value="'evaluate'" :toggleable="true"
+                        :isActiveProp="showEvaluate" @click="toggleTab('evaluate')">{{ $t('evaluate') }}
                     </MultipurposeButton>
-                    <MultipurposeButton button-type="middle" :toggleable="false" @click="displayTextOnly">{{
+                    <MultipurposeButton button-type="middle" :toggleable="false" @click="toggleTab('text only')">{{
                         $t('textonly') }}
                     </MultipurposeButton>
-                    <MultipurposeButton button-type="right" :toggleable="true" :isActiveProp="showGenerate"
-                        @click="showGenerateTab">{{ $t('generate') }}
+                    <MultipurposeButton button-type="right" :value="'generateTab'" :toggleable="true"
+                        :isActiveProp="showGenerate" @click="toggleTab('generate')">{{ $t('generate') }}
                     </MultipurposeButton>
 
                 </div>
                 <div>
-                    <MultipurposeButton button-type="left" :onclick="copyText">{{ $t('copy') }}</MultipurposeButton>
-                    <MultipurposeButton button-type="right" :onclick="pasteText">{{ $t('paste') }}</MultipurposeButton>
+                    <MultipurposeButton button-type="left" @click="copyText">{{ $t('copy') }}</MultipurposeButton>
+                    <MultipurposeButton button-type="right" @click="pasteText">{{ $t('paste') }}</MultipurposeButton>
                 </div>
             </div>
             <TextField ref="textArea" v-model="mainTextValue" :is-long-field="true"></TextField>
@@ -72,9 +72,9 @@
                 <p>word count : {{ responseWordCount }}</p>
                 <p>Tokens : {{ inputTokens }} / {{ outputTokens }}</p>
             </div>
-            <h2 v-if="feedback.length > 0">{{$t('implementFeedback')}}</h2>
-            <MultipurposeButton class="feedback" @click="implementFeedback(feedbackrule)"
-                v-for="(feedbackrule, index) in feedback" :key="index">{{ feedbackrule }}
+            <h2 v-if="feedback.length > 0">{{ $t('implementFeedback') }}</h2>
+            <MultipurposeButton @click="implementFeedback(feedbackrule)" v-for="(feedbackrule, index) in feedback"
+                :key="index">{{ feedbackrule }}
             </MultipurposeButton>
             <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         </div>
@@ -82,15 +82,13 @@
 
 
 </template>
-
-
 <script>
 import BarometerComponent from './BarometerComponent.vue';
 import LoadingComponent from './LoadingComponent.vue';
 import MultipurposeButton from './MultipurposeButton.vue';
 import MultipurposeSlider from './MultipurposeSlider.vue';
 import TextField from './TextField.vue';
-import { fetchDataFromApi } from '@/services/apiService';
+import { fetchDataFromApi, PROMPTS } from '@/services/apiService';
 
 export default {
     components: {
@@ -101,18 +99,13 @@ export default {
         LoadingComponent
     },
     mounted() {
-        if (localStorage.getItem("locale")) {
-            const storedLocale = localStorage.getItem("locale");
-            if (this.languageOptions.includes(storedLocale)) {
-                this.$i18n.locale = storedLocale;
-                this.currentLanguage = storedLocale;
-            } else {
-                localStorage.setItem("locale", this.defaultLanguage);
-                this.$i18n.locale = this.defaultLanguage;
-                this.currentLanguage = this.defaultLanguage;
-            }
+        const locale = localStorage.getItem("locale");
+        if (locale && this.languageOptions.includes(locale)) {
+            this.currentLanguage = locale;
+            this.$i18n.locale = locale;
         } else {
-            localStorage.setItem("locale", this.defaultLanguage);
+            this.currentLanguage = this.defaultLanguage;
+            this.$i18n.locale = this.defaultLanguage;
         }
     },
     data() {
@@ -139,9 +132,6 @@ export default {
         };
     },
     methods: {
-        handleValueChange() {
-            this.textChanged = true;
-        },
         changeLanguage() {
             if (this.languageOptions.includes(this.currentLanguage)) {
                 localStorage.setItem("locale", this.currentLanguage);
@@ -171,7 +161,6 @@ export default {
                 localStorage.setItem('undo-history', JSON.stringify(undoHistory));
                 localStorage.setItem('redo-history', JSON.stringify(redoHistory));
             }
-
             this.responseWordCount = this.mainTextValue.split(' ').length;
         },
         redoChanges() {
@@ -197,41 +186,42 @@ export default {
                 this.$refs.textArea.$refs.textArea.value = text;
             });
         },
+        toggleTab(tab) {
+            switch (tab) {
+                case 'evaluate':
+                    this.showEvaluate = !this.showEvaluate;
+                    if (this.showEvaluate) this.evaluateText();
+                    break;
+                case 'generate':
+                    this.showGenerate = !this.showGenerate;
+                    break;
+                case 'text only':
+                    this.displayTextOnly();
+                    break;
+                default:
+                    console.error('Invalid tab');
+            }
+        },
         displayTextOnly() {
-            console.log('Display text only');
             this.showEvaluate = false;
             this.showGenerate = false;
         },
-        showGenerateTab() {
-            console.log('Show generate tab');
-            this.showGenerate = !this.showGenerate;
-        },
-        showEvaluateTab() {
-            console.log('Show evaluate tab');
-            this.showEvaluate = !this.showEvaluate;
-
-            if (this.showEvaluate && this.evaluatedText !== this.mainTextValue) {
-                this.evaluateText();
-                this.evaluatedText = this.mainTextValue;
-            }
-        },
-        async generateNewText() {
-            console.log('Generating new text');
-            const prompt = "Generate a new text, based on the following parameters. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT. THE ENTIRE RESPONSE MUST BE IN THE LANGUAGE PROVIDED. IF POSSIBLE YOU SHOULD FORMAT THE TEXT WITH TITLES, PARAHRAPHS, ETC.";
-            const url = 'http://localhost:3000/api/' + this.currentModel;
-            const body = {
-                prompt,
+        buildRequestBody(type) {
+            return {
+                prompt: type === "new" ? PROMPTS.generate : PROMPTS.regenerate,
                 maxWordsLength: this.maxWordLengthValue,
                 proficiencyLevel: this.proficiencyLevelValue,
                 language: this.currentLanguage,
-                subject: this.subjectTextValue,
+                subject: type === "new" ? this.subjectTextValue : "same subject as text",
                 additionalParams: this.additionalParamsTextValue,
-            };
-
-            this.isLoading = true;
-
+                mainText: type === "new" ? "" : this.mainTextValue,
+            }
+        },
+        async generateText(type = "new") {
+            const body = this.buildRequestBody(type);
             try {
-                const data = await fetchDataFromApi(url, body);
+                this.isLoading = true;
+                const data = await fetchDataFromApi(this.currentModel, body);
                 this.saveToCache();
                 this.inputTokens = data.inputTokens || 0;
                 this.outputTokens = data.outputTokens || 0;
@@ -244,41 +234,10 @@ export default {
             } finally {
                 this.isLoading = false;
             }
-
-        },
-        async regenerateText() {
-            console.log('Regenerating text');
-            const prompt = "Tweak the main text slightly, based on the following parameters. Adjust or generate words, grammar or language wherever neccesary to match the parameters as best as possible. ONLY OUTPUT THE TEXT, NO OTHER CONTEXT. THE ENTIRE RESPONSE MUST BE IN THE LANGUAGE PROVIDED. IF POSSIBLE YOU SHOULD FORMAT THE TEXT WITH TITLES, PARAHRAPHS, ETC.";
-            const url = 'http://localhost:3000/api/' + this.currentModel;
-            const body = {
-                prompt,
-                maxWordsLength: this.maxWordLengthValue,
-                proficiencyLevel: this.proficiencyLevelValue,
-                language: this.currentLanguage,
-                additionalParams: this.additionalParamsTextValue,
-                mainText: this.mainTextValue,
-            };
-
-            this.isLoading = true;
-
-            try {
-                const data = await fetchDataFromApi(url, body);
-                this.saveToCache();
-                this.inputTokens = data.inputTokens || 0;
-                this.outputTokens = data.outputTokens || 0;
-                this.mainTextValue = data.responseText || 'No response text available';
-                this.showEvaluate = false;
-                this.feedback = [];
-            } catch (error) {
-                this.mainTextValue = 'Error calling API';
-            } finally {
-                this.isLoading = false;
-            }
         },
         async evaluateText() {
-            console.log('Evaluating text');
-        const prompt = "Evaluate the main Text. Give suggestions on how to improve it, but keep it compact and to the point. PROVIDE A CEFR LEVEL BEFORE THE FEEDBACK, THEN ONLY OUTPUT THE FEEDBACK, NO OTHER CONTEXT, EACH FEEDBACK ON A NEW LINE. THE ENTIRE RESPONSE MUST BE IN THE LANGUAGE PROVIDED.";
-            const url = 'http://localhost:3000/api/' + this.currentModel;
+            if (this.mainTextValue === this.evaluatedText) return;
+            const prompt = PROMPTS.evaluate;
             const body = {
                 prompt,
                 language: this.currentLanguage,
@@ -289,7 +248,8 @@ export default {
             this.isLoading = true;
 
             try {
-                const data = await fetchDataFromApi(url, body);
+                const data = await fetchDataFromApi(this.currentModel, body);
+                this.evaluatedText = this.mainTextValue;
                 this.feedbackValue = data.responseText || 'No response text available';
                 this.feedback = this.feedbackValue.split('\n').splice(1).filter(feedback => feedback.length > 0);
 
@@ -304,34 +264,28 @@ export default {
             }
         },
         async implementFeedback(rule) {
-            const prompt = "Implement the following feedback to the mainText. ONLY OUTPUT THE TEXT IN THE GIVEN LANGUAGE, NO OTHER CONTEXT";
-            const url = 'http://localhost:3000/api/' + this.currentModel;
+            const prompt = PROMPTS.implementFeedback;
             const body = {
                 prompt,
                 mainText: this.mainTextValue,
                 feedback: rule,
                 language: this.currentLanguage,
             };
-            try{
+            try {
                 this.isLoading = true;
-                const data = await fetchDataFromApi(url, body);
-                console.log(data);
+                const data = await fetchDataFromApi(this.currentModel, body);
                 this.mainTextValue = data.responseText || 'No response text available';
-            }catch(error){
+            } catch (error) {
                 this.mainTextValue = 'Error calling API';
-            }finally{
+            } finally {
                 this.isLoading = false;
             }
             this.feedback = this.feedback.filter(feedbackrule => feedbackrule !== rule);
-
         }
     }
-
 }
 
 </script>
-
-
 <style scoped>
 .header {
     display: flex;
@@ -356,7 +310,6 @@ h1 {
     height: 100%;
 
 }
-
 
 img {
     width: 100%
@@ -393,7 +346,6 @@ img {
     justify-content: space-between;
 }
 
-
 select {
     width: 100%;
     padding: 1rem;
@@ -404,15 +356,6 @@ select {
     justify-content: space-between;
     color: grey;
     font-size: 0.8rem;
-}
-
-.feedback {
-    margin: 0.5rem 0;
-    padding: 0.5rem;
-    width: 100%;
-    border: 1px solid black;
-    border-radius: 5px;
-    display: block;
 }
 
 .v-enter-active,

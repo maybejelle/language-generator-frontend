@@ -3,11 +3,7 @@
     <div class="header">
         <h1>Language Level Generator</h1>
         <select v-model="currentLanguage" @change="changeLanguage">
-            <option value="Français">Français</option>
-            <option value="English_British">English (UK)</option>
-            <option value="English_American">English (US)</option>
-            <option value="Nederlands">Nederlands</option>
-            <option value="Español">Español</option>
+            <option v-for="language in languageOptions" :key="language" :value="language">{{ language }}</option>
         </select>
         <select v-model="currentModel">
             <option value="claude">Claude</option>
@@ -52,13 +48,13 @@
                 </div>
                 <div class="coreActionButtons">
                     <MultipurposeButton button-type="left" :toggleable="true" :isActiveProp="showEvaluate"
-                        @click="showEvaluateTab">{{ $t('evaluate') }}
+                        @click="toggleTab('evaluate')">{{ $t('evaluate') }}
                     </MultipurposeButton>
-                    <MultipurposeButton button-type="middle" :toggleable="false" @click="displayTextOnly">{{
+                    <MultipurposeButton button-type="middle" :toggleable="false" @click="toggleTab('text only')">{{
                         $t('textonly') }}
                     </MultipurposeButton>
                     <MultipurposeButton button-type="right" :toggleable="true" :isActiveProp="showGenerate"
-                        @click="showGenerateTab">{{ $t('generate') }}
+                        @click="toggleTab('generate')">{{ $t('generate') }}
                     </MultipurposeButton>
 
                 </div>
@@ -197,23 +193,25 @@ export default {
                 this.$refs.textArea.$refs.textArea.value = text;
             });
         },
+        toggleTab(tab) {
+            switch (tab) {
+                case 'evaluate':
+                    this.showEvaluate = !this.showEvaluate;
+                    break;
+                case 'generate':
+                    this.showGenerate = !this.showGenerate;
+                    break;
+                case 'text only':
+                    this.displayTextOnly();
+                    break;
+                default:
+                    console.error('Invalid tab');
+            }
+        },
         displayTextOnly() {
             console.log('Display text only');
             this.showEvaluate = false;
             this.showGenerate = false;
-        },
-        showGenerateTab() {
-            console.log('Show generate tab');
-            this.showGenerate = !this.showGenerate;
-        },
-        showEvaluateTab() {
-            console.log('Show evaluate tab');
-            this.showEvaluate = !this.showEvaluate;
-
-            if (this.showEvaluate && this.evaluatedText !== this.mainTextValue) {
-                this.evaluateText();
-                this.evaluatedText = this.mainTextValue;
-            }
         },
         async generateNewText() {
             console.log('Generating new text');

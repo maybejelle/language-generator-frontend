@@ -68,7 +68,7 @@
                 <p>word count : {{ responseWordCount }}</p>
                 <p>Tokens : {{ inputTokens }} / {{ outputTokens }}</p>
             </div>
-            <h2 v-if="feedback.length > 0">{{$t('implementFeedback')}}</h2>
+            <h2 v-if="feedback.length > 0">{{ $t('implementFeedback') }}</h2>
             <MultipurposeButton class="feedback" @click="implementFeedback(feedbackrule)"
                 v-for="(feedbackrule, index) in feedback" :key="index">{{ feedbackrule }}
             </MultipurposeButton>
@@ -197,6 +197,9 @@ export default {
             switch (tab) {
                 case 'evaluate':
                     this.showEvaluate = !this.showEvaluate;
+                    if (this.showEvaluate) {
+                        this.evaluateText();
+                    }
                     break;
                 case 'generate':
                     this.showGenerate = !this.showGenerate;
@@ -213,7 +216,7 @@ export default {
             this.showEvaluate = false;
             this.showGenerate = false;
         },
-        async generateText(type = "new"){
+        async generateText(type = "new") {
             const body = {
                 prompt: "",
                 maxWordsLength: this.maxWordLengthValue,
@@ -223,12 +226,12 @@ export default {
                 additionalParams: this.additionalParamsTextValue,
                 mainText: "",
             }
-            if(type === "new"){
+            if (type === "new") {
                 body.prompt = PROMPTS.generate;
-            }else{
+            } else {
                 body.prompt = PROMPTS.regenerate;
                 body.mainText = this.mainTextValue;
-                body.subject= "same subject as text";
+                body.subject = "same subject as text";
             }
             const url = 'http://localhost:3000/api/' + this.currentModel;
             try {
@@ -248,8 +251,7 @@ export default {
             }
         },
         async evaluateText() {
-            console.log('Evaluating text');
-        const prompt = "Evaluate the main Text. Give suggestions on how to improve it, but keep it compact and to the point. PROVIDE A CEFR LEVEL BEFORE THE FEEDBACK, THEN ONLY OUTPUT THE FEEDBACK, NO OTHER CONTEXT, EACH FEEDBACK ON A NEW LINE. THE ENTIRE RESPONSE MUST BE IN THE LANGUAGE PROVIDED.";
+            const prompt = PROMPTS.evaluate;
             const url = 'http://localhost:3000/api/' + this.currentModel;
             const body = {
                 prompt,
@@ -284,14 +286,14 @@ export default {
                 feedback: rule,
                 language: this.currentLanguage,
             };
-            try{
+            try {
                 this.isLoading = true;
                 const data = await fetchDataFromApi(url, body);
                 console.log(data);
                 this.mainTextValue = data.responseText || 'No response text available';
-            }catch(error){
+            } catch (error) {
                 this.mainTextValue = 'Error calling API';
-            }finally{
+            } finally {
                 this.isLoading = false;
             }
             this.feedback = this.feedback.filter(feedbackrule => feedbackrule !== rule);

@@ -11,7 +11,7 @@
   </button>
 
   <div v-if="displayTooltip" class="tooltip" :style="{ top: `${mousePosition.y}px`, left: `${mousePosition.x + 30}px` }">
-    <p>{{description}}</p>
+    <p>{{$t(description)}}</p>
   </div>
 </template>
 
@@ -55,28 +55,28 @@ export default {
   mounted() {
     switch(this.value){
       case "generate":
-        this.description = "Generate a new text based on the selected options";
+        this.description = "generateButtonDescription";
         break;
       case "copy":
-        this.description = "Copy the generated text to the clipboard";
+        this.description = "CopyButtonDescription";
         break;
       case "paste":
-        this.description = "Paste text from the clipboard";
+        this.description = "pasteButtonDescription";
         break;
       case "regenerate":
-        this.description = "Regenerate the given text, with the options below";
+        this.description = "regenerateButtonDescription";
         break;
       case "undo":
-        this.description = "Undo the last action";
+        this.description = "undoButtonDescription";
         break;
       case "redo":
-        this.description = "Redo the last action";
+        this.description = "redoButtonDescription";
         break;
       case "evaluate":
-        this.description = "Evaluate the given text";
+        this.description = "evaluateButtonDescription";
         break;
       case "generateTab":
-        this.description = "open/close the generate tab";
+        this.description = "generateTabButtonDescription";
         break;
       default:
         this.description = "";

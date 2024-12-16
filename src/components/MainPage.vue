@@ -78,8 +78,6 @@
 
 
 </template>
-
-
 <script>
 import BarometerComponent from './BarometerComponent.vue';
 import LoadingComponent from './LoadingComponent.vue';
@@ -197,9 +195,7 @@ export default {
             switch (tab) {
                 case 'evaluate':
                     this.showEvaluate = !this.showEvaluate;
-                    if (this.showEvaluate) {
-                        this.evaluateText();
-                    }
+                    if (this.showEvaluate) this.evaluateText();
                     break;
                 case 'generate':
                     this.showGenerate = !this.showGenerate;
@@ -212,31 +208,25 @@ export default {
             }
         },
         displayTextOnly() {
-            console.log('Display text only');
             this.showEvaluate = false;
             this.showGenerate = false;
         },
-        async generateText(type = "new") {
-            const body = {
-                prompt: "",
+        buildRequestBody(type) {
+            return {
+                prompt: type === "new" ? PROMPTS.generate : PROMPTS.regenerate,
                 maxWordsLength: this.maxWordLengthValue,
                 proficiencyLevel: this.proficiencyLevelValue,
                 language: this.currentLanguage,
-                subject: this.subjectTextValue,
+                subject: type === "new" ? this.subjectTextValue : "same subject as text",
                 additionalParams: this.additionalParamsTextValue,
-                mainText: "",
+                mainText: type === "new" ? "" : this.mainTextValue,
             }
-            if (type === "new") {
-                body.prompt = PROMPTS.generate;
-            } else {
-                body.prompt = PROMPTS.regenerate;
-                body.mainText = this.mainTextValue;
-                body.subject = "same subject as text";
-            }
-            const url = 'http://localhost:3000/api/' + this.currentModel;
+        },
+        async generateText(type = "new") {
+            const body = this.buildRequestBody(type);
             try {
                 this.isLoading = true;
-                const data = await fetchDataFromApi(url, body);
+                const data = await fetchDataFromApi(this.currentModel, body);
                 this.saveToCache();
                 this.inputTokens = data.inputTokens || 0;
                 this.outputTokens = data.outputTokens || 0;
@@ -252,7 +242,6 @@ export default {
         },
         async evaluateText() {
             const prompt = PROMPTS.evaluate;
-            const url = 'http://localhost:3000/api/' + this.currentModel;
             const body = {
                 prompt,
                 language: this.currentLanguage,
@@ -263,7 +252,7 @@ export default {
             this.isLoading = true;
 
             try {
-                const data = await fetchDataFromApi(url, body);
+                const data = await fetchDataFromApi(this.currentModel, body);
                 this.feedbackValue = data.responseText || 'No response text available';
                 this.feedback = this.feedbackValue.split('\n').splice(1).filter(feedback => feedback.length > 0);
 
@@ -278,8 +267,7 @@ export default {
             }
         },
         async implementFeedback(rule) {
-            const prompt = "Implement the following feedback to the mainText. ONLY OUTPUT THE TEXT IN THE GIVEN LANGUAGE, NO OTHER CONTEXT";
-            const url = 'http://localhost:3000/api/' + this.currentModel;
+            const prompt = PROMPTS.implementFeedback;
             const body = {
                 prompt,
                 mainText: this.mainTextValue,
@@ -288,8 +276,7 @@ export default {
             };
             try {
                 this.isLoading = true;
-                const data = await fetchDataFromApi(url, body);
-                console.log(data);
+                const data = await fetchDataFromApi(this.currentModel, body);
                 this.mainTextValue = data.responseText || 'No response text available';
             } catch (error) {
                 this.mainTextValue = 'Error calling API';
@@ -297,15 +284,11 @@ export default {
                 this.isLoading = false;
             }
             this.feedback = this.feedback.filter(feedbackrule => feedbackrule !== rule);
-
         }
     }
-
 }
 
 </script>
-
-
 <style scoped>
 .header {
     display: flex;
@@ -330,7 +313,6 @@ h1 {
     height: 100%;
 
 }
-
 
 img {
     width: 100%
@@ -366,7 +348,6 @@ img {
     display: flex;
     justify-content: space-between;
 }
-
 
 select {
     width: 100%;

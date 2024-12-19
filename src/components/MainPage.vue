@@ -37,9 +37,6 @@
 
                 <TextField v-model="additionalParamsTextValue" :title="$t('additionalparameters')"
                     :description="$t('additionalparametersinfo')"></TextField>
-
-                <TextField :title="$t('sources')" is-long-field="true" readonly :description="$t('sourcesinfo')">
-                </TextField>
             </div>
         </Transition>
         <div class="textEditorField">

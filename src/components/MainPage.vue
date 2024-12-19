@@ -3,7 +3,7 @@
     <div class="header">
         <h1>Language Level Generator</h1>
         <select v-model="currentLanguage" @change="changeLanguage">
-            <option v-for="language in languageOptions" :key="language" :value="language">{{ language }}</option>
+            <option v-for="(value,key) in languageOptions" :key="value" :value="value">{{ key }}</option>
         </select>
         <select v-model="currentModel">
             <option value="claude">Claude</option>
@@ -100,7 +100,7 @@ export default {
     },
     mounted() {
         const locale = localStorage.getItem("locale");
-        if (locale && this.languageOptions.includes(locale)) {
+        if (locale && Object.values(this.languageOptions).includes(locale)) {
             this.currentLanguage = locale;
             this.$i18n.locale = locale;
         } else {
@@ -119,7 +119,13 @@ export default {
             outputTokens: 0,
             currentLanguage: this.$i18n.locale,
             defaultLanguage: 'English_British',
-            languageOptions: ['Français', 'English_British', 'English_American', 'Nederlands', 'Español'],
+            languageOptions: {
+                'Français': 'Français',
+                'English (UK)': "English_British",
+                'English (US)': "English_American",
+                'Nederlands' : "Nederlands",
+                'Español' : "Español",
+            },
             maxWordLengthValue: 100,
             proficiencyLevelValue: 'A1',
             subjectTextValue: 'Random subject',
@@ -133,7 +139,7 @@ export default {
     },
     methods: {
         changeLanguage() {
-            if (this.languageOptions.includes(this.currentLanguage)) {
+            if (Object.values(this.languageOptions).includes(this.currentLanguage)) {
                 localStorage.setItem("locale", this.currentLanguage);
                 this.$i18n.locale = this.currentLanguage;
             } else {

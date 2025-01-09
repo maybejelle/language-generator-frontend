@@ -10,7 +10,7 @@ export const PROMPTS = {
 
 };
 
-const BASE_URL = "http://localhost:3000/api/";
+const BASE_URL = "https://language-generator-backend.onrender.com/api/";
 
 export const fetchDataFromApi = async (model, body) => {
   try {
